@@ -33,15 +33,22 @@ labels = ["T-shirt/top",
 x_train = x_train / 255.0
 x_test = x_test / 255.0
 
+# Reshape for Conv2D: (N, 28, 28) -> (N, 28, 28, 1)
+x_train = x_train[..., np.newaxis]
+x_test = x_test[..., np.newaxis]
+
 # Use 20% of training data for validation (same convention as heart-disease)
 val_split = 0.2
 
 # --- Model architecture ---
 
-input = keras.Input(shape=(28, 28))
-h = keras.layers.Flatten()(input)
-h = keras.layers.Dense(128, activation="relu", name="hidden1")(h)
-h = keras.layers.Dense(128, activation="relu", name="hidden2")(h)
+input = keras.Input(shape=(28, 28, 1))
+h = keras.layers.Conv2D(32, (3, 3), activation="relu", padding="same")(input)
+h = keras.layers.MaxPooling2D((2, 2))(h)
+h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.MaxPooling2D((2, 2))(h)
+h = keras.layers.Flatten()(h)
+h = keras.layers.Dense(128, activation="relu")(h)
 output = keras.layers.Dense(10, activation="softmax")(h)
 model = keras.Model(input, output)
 
