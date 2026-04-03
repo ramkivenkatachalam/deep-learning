@@ -82,10 +82,15 @@ lr_schedule = keras.optimizers.schedules.CosineDecay(
     initial_learning_rate=0.001, decay_steps=num_epochs * (len(x_train) * (1 - val_split)) // 128
 )
 optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=1e-4)
-model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# Convert to one-hot for label smoothing
+y_train_oh = keras.utils.to_categorical(y_train, 10)
+y_test_oh = keras.utils.to_categorical(y_test, 10)
+
+loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
+model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
 t0 = time.time()
-history = model.fit(x_train, y_train, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True)
+history = model.fit(x_train, y_train_oh, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True)
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
@@ -93,7 +98,7 @@ history_dict = history.history
 # --- Evaluation and structured output ---
 # Stats block is parsed by experiment tooling (grep "^test_accuracy:" run.log)
 
-test_loss, test_accuracy = model.evaluate(x_test, y_test)
+test_loss, test_accuracy = model.evaluate(x_test, y_test_oh)
 
 train_loss = history_dict["loss"][-1]
 train_accuracy = history_dict["accuracy"][-1]
