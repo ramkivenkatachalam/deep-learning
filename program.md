@@ -4,14 +4,12 @@ This protocol drives autonomous deep learning experiments. Each assignment lives
 
 ## Setup
 
-To set up a new experiment run, work with the user to:
+To set up a new experiment run:
 
 1. **`cd` into the assignment folder** (e.g. `cd 1_heart-disease`).
-2. **Agree on a run tag**: propose a tag based on today's date (e.g. `apr02`). The branch `autoresearch/<tag>` must not already exist — this is a fresh run.
-3. **Create the branch**: `git checkout -b autoresearch/<tag>` from current main.
-4. **Read the in-scope files**: Read the assignment's `CLAUDE.md` and `training.py` for full context.
-5. **Initialize results.csv**: Create `results.csv` with just the header row if it doesn't exist. The baseline will be recorded after the first run.
-6. **Confirm and go**: Confirm setup looks good.
+2. **Read the in-scope files**: Read the assignment's `CLAUDE.md` and `training.py` for full context.
+3. **Initialize results.csv**: Create `results.csv` with just the header row if it doesn't exist. The baseline will be recorded after the first run.
+4. **Confirm and go**: Confirm setup looks good.
 
 Once you get confirmation, kick off the experimentation.
 
@@ -79,21 +77,18 @@ NOTE: do not commit `results.csv` — leave it untracked by git (it's in `.gitig
 
 ## The experiment loop
 
-The experiment runs on a dedicated branch (e.g. `autoresearch/apr02`).
+All experiments run on `main`. Each experiment is a commit — kept if it improves, reverted if it doesn't.
 
 LOOP FOREVER:
 
-1. Look at the git state: the current branch/commit we're on.
-2. Tune `training.py` with an experimental idea by directly hacking the code.
-3. git commit the change.
-4. Run the experiment: `uv run python training.py > run.log 2>&1` (redirect everything — do NOT use tee or let output flood your context).
-5. Read out the results: `grep "^test_accuracy:\|^test_loss:\|^val_accuracy:" run.log`
-6. If the grep output is empty, the run crashed. Run `tail -n 50 run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up on that idea.
-7. Update the status and description for this run's row in `results.csv`.
-8. If test_accuracy improved (higher), you "advance" the branch, keeping the git commit.
-9. If test_accuracy is equal or worse, you git reset back to where you started.
-
-The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
+1. Tune `training.py` with an experimental idea by directly hacking the code.
+2. git commit the change.
+3. Run the experiment: `uv run python training.py > run.log 2>&1` (redirect everything — do NOT use tee or let output flood your context).
+4. Read out the results: `grep "^test_accuracy:\|^test_loss:\|^val_accuracy:" run.log`
+5. If the grep output is empty, the run crashed. Run `tail -n 50 run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up on that idea.
+6. Update the status and description for this run's row in `results.csv`.
+7. If test_accuracy improved (higher), keep the commit.
+8. If test_accuracy is equal or worse, `git reset --hard HEAD~1` to revert.
 
 **Timeout**: Each experiment should take under 2 minutes. If a run exceeds 5 minutes, kill it and treat it as a failure (discard and revert).
 
