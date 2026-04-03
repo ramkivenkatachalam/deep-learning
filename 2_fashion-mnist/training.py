@@ -57,6 +57,13 @@ h = keras.layers.BatchNormalization()(h)
 h = keras.layers.MaxPooling2D((2, 2))(h)
 h = keras.layers.Dropout(0.25)(h)
 
+h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.MaxPooling2D((2, 2))(h)
+h = keras.layers.Dropout(0.25)(h)
+
 h = keras.layers.Flatten()(h)
 h = keras.layers.Dense(256, activation="relu")(h)
 h = keras.layers.BatchNormalization()(h)
