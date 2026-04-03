@@ -77,7 +77,7 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 40
+num_epochs = 60
 steps_per_epoch = int(len(x_train) * (1 - val_split)) // 128
 lr_schedule = keras.optimizers.schedules.CosineDecay(
     initial_learning_rate=0.002, decay_steps=num_epochs * steps_per_epoch, warmup_target=0.002, warmup_steps=3 * steps_per_epoch
