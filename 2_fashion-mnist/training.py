@@ -77,10 +77,11 @@ num_params = model.count_params()
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-6)
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=7, restore_best_weights=True)
 
-num_epochs = 25
+num_epochs = 50
 t0 = time.time()
-history = model.fit(x_train, y_train, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True, callbacks=[reduce_lr])
+history = model.fit(x_train, y_train, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True, callbacks=[reduce_lr, early_stop])
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
