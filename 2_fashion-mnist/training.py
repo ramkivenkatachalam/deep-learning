@@ -80,7 +80,7 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 60
+num_epochs = 80
 batch_size = 128
 steps_per_epoch = len(x_tr) // batch_size
 lr_schedule = keras.optimizers.schedules.CosineDecay(
