@@ -78,8 +78,9 @@ num_params = model.count_params()
 # --- Training ---
 
 num_epochs = 40
+steps_per_epoch = int(len(x_train) * (1 - val_split)) // 128
 lr_schedule = keras.optimizers.schedules.CosineDecay(
-    initial_learning_rate=0.001, decay_steps=num_epochs * (len(x_train) * (1 - val_split)) // 128
+    initial_learning_rate=0.002, decay_steps=num_epochs * steps_per_epoch, warmup_target=0.002, warmup_steps=3 * steps_per_epoch
 )
 optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=1e-4)
 # Convert to one-hot for label smoothing
