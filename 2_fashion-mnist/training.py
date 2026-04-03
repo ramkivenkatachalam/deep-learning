@@ -37,8 +37,11 @@ x_test = x_test / 255.0
 x_train = x_train[..., np.newaxis]
 x_test = x_test[..., np.newaxis]
 
-# Use 20% of training data for validation (same convention as heart-disease)
+# Manual train/val split for proper augmentation
 val_split = 0.2
+num_val = int(len(x_train) * val_split)
+x_val, y_val = x_train[:num_val], y_train[:num_val]
+x_tr, y_tr = x_train[num_val:], y_train[num_val:]
 
 # --- Model architecture ---
 
@@ -78,20 +81,33 @@ num_params = model.count_params()
 # --- Training ---
 
 num_epochs = 60
-steps_per_epoch = int(len(x_train) * (1 - val_split)) // 128
+batch_size = 128
+steps_per_epoch = len(x_tr) // batch_size
 lr_schedule = keras.optimizers.schedules.CosineDecay(
     initial_learning_rate=0.002, decay_steps=num_epochs * steps_per_epoch, warmup_target=0.002, warmup_steps=3 * steps_per_epoch
 )
 optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=5e-4)
 # Convert to one-hot for label smoothing
-y_train_oh = keras.utils.to_categorical(y_train, 10)
+y_tr_oh = keras.utils.to_categorical(y_tr, 10)
+y_val_oh = keras.utils.to_categorical(y_val, 10)
 y_test_oh = keras.utils.to_categorical(y_test, 10)
 
 loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
 model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
+# Data augmentation via tf.data (train only)
+def augment(image, label):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.pad(image, [[2, 2], [2, 2], [0, 0]], mode='REFLECT')
+    image = tf.image.random_crop(image, size=[28, 28, 1])
+    return image, label
+
+train_ds = tf.data.Dataset.from_tensor_slices((x_tr, y_tr_oh))
+train_ds = train_ds.shuffle(len(x_tr)).map(augment, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val_oh)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
 t0 = time.time()
-history = model.fit(x_train, y_train_oh, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True)
+history = model.fit(train_ds, epochs=num_epochs, validation_data=val_ds, verbose=True)
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
