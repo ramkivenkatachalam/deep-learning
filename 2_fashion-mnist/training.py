@@ -70,15 +70,15 @@ num_params = model.count_params()
 
 # --- Training ---
 
-optimizer = keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4)
+num_epochs = 40
+lr_schedule = keras.optimizers.schedules.CosineDecay(
+    initial_learning_rate=0.001, decay_steps=num_epochs * (len(x_train) * (1 - val_split)) // 128
+)
+optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=1e-4)
 model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-6)
-early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=7, restore_best_weights=True)
-
-num_epochs = 50
 t0 = time.time()
-history = model.fit(x_train, y_train, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True, callbacks=[reduce_lr, early_stop])
+history = model.fit(x_train, y_train, batch_size=128, epochs=num_epochs, validation_split=val_split, verbose=True)
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
