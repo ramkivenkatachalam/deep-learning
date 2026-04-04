@@ -15,6 +15,14 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 uv sync
 ```
 
+## Starting a new project
+
+```bash
+./new_project.sh "project-name"
+```
+
+This creates a numbered folder (e.g. `3_project-name/`) with template `CLAUDE.md` and `training.py` files. Fill in the TODOs with your dataset, baseline model, and training config, then run `/autoresearch` to start tuning.
+
 ## Running a training script
 
 ```bash
@@ -62,6 +70,7 @@ This generates an `experiments.png` chart showing all experiments, which ones we
 ## Project structure
 
 ```
+├── new_project.sh             # Scaffold a new project
 ├── run_experiment.sh          # Commit + run helper
 ├── plot_results.py            # Results visualization
 ├── pyproject.toml             # Shared dependencies
