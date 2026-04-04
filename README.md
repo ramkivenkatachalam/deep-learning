@@ -1,6 +1,6 @@
 # Deep Learning
 
-Assignments for MIT 15.773 Hands-On Deep Learning (Spring 2024). Each assignment starts with a baseline model, then uses an autonomous experiment harness ([autoresearch](#autoresearch)) to iteratively tune architecture, hyperparameters, and regularization.
+Projects for MIT Deep Learning certification. Each project starts with a baseline model, then uses an autonomous experiment harness ([autoresearch](#autoresearch)) to iteratively tune architecture, hyperparameters, and regularization.
 
 ## Results
 
