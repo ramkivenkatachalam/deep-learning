@@ -1,6 +1,6 @@
 # Deep Learning
 
-Assignments for MIT 15.773 Hands-On Deep Learning (Spring 2024), structured for autonomous experimentation with the [autoresearch protocol](program.md).
+Assignments for MIT 15.773 Hands-On Deep Learning (Spring 2024), structured for autonomous experimentation with the autoresearch protocol (`/autoresearch <folder>`).
 
 ## Assignments
 
@@ -38,7 +38,6 @@ uv run python plot_results.py 1_heart-disease
 ## Project structure
 
 ```
-├── program.md             # Autoresearch protocol
 ├── run_experiment.sh      # Commit + run helper
 ├── plot_results.py        # Results visualization
 ├── pyproject.toml         # Shared dependencies

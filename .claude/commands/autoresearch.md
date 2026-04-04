@@ -6,7 +6,7 @@ Run autonomous deep learning experiments on the assignment folder: `$ARGUMENTS`
 
 1. `cd` into the `$ARGUMENTS` folder.
 2. Read `CLAUDE.md` and `training.py` in that folder for full context.
-3. If `results.csv` doesn't exist, it will be created automatically on first run.
+3. Read `results.csv` if it exists — this is your experiment history.
 4. Confirm setup looks good, then begin.
 
 ## Rules
@@ -21,7 +21,10 @@ Run autonomous deep learning experiments on the assignment folder: `$ARGUMENTS`
 
 **Goal: maximize test_accuracy.** Simpler is better — don't add complexity for marginal gains.
 
-**First run:** always establish the baseline by running `training.py` as-is.
+## Continuation vs fresh start
+
+- If `results.csv` **exists and has data**: this is a continuation. Review the history to understand what's been tried, what the current best is, and what ideas failed. Do NOT re-run the baseline. Pick up where the last session left off — propose new ideas informed by past results.
+- If `results.csv` **doesn't exist or is empty**: this is a fresh start. Run `training.py` as-is to establish the baseline first.
 
 ## Experiment loop
 
