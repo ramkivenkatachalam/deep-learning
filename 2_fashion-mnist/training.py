@@ -37,10 +37,10 @@ x_test = x_test / 255.0
 
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(256, activation="relu"),
+    keras.layers.Dense(256, activation="gelu"),
     keras.layers.BatchNormalization(),
     keras.layers.Dropout(0.3),
-    keras.layers.Dense(256, activation="relu"),
+    keras.layers.Dense(256, activation="gelu"),
     keras.layers.BatchNormalization(),
     keras.layers.Dropout(0.3),
     keras.layers.Dense(10, activation="softmax"),
@@ -52,7 +52,7 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 30
+num_epochs = 50
 batch_size = 64
 
 optimizer = keras.optimizers.Adam()
