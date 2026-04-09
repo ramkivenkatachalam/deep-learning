@@ -38,7 +38,11 @@ x_test = x_test / 255.0
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(28, 28)),
     keras.layers.Dense(128, activation="relu"),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.3),
     keras.layers.Dense(128, activation="relu"),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.3),
     keras.layers.Dense(10, activation="softmax"),
 ])
 
