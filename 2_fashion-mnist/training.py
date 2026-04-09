@@ -43,6 +43,9 @@ model = keras.Sequential([
     keras.layers.Dense(512, activation="gelu"),
     keras.layers.BatchNormalization(),
     keras.layers.Dropout(0.3),
+    keras.layers.Dense(256, activation="gelu"),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.3),
     keras.layers.Dense(10, activation="softmax"),
 ])
 
@@ -53,14 +56,25 @@ num_params = model.count_params()
 # --- Training ---
 
 num_epochs = 80
-batch_size = 64
+batch_size = 128
 
-optimizer = keras.optimizers.Adam()
-model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+# Manual val split for label smoothing
+val_split = 0.2
+num_val = int(len(x_train) * val_split)
+x_val, y_val = x_train[:num_val], y_train[:num_val]
+x_tr, y_tr = x_train[num_val:], y_train[num_val:]
+
+y_tr_oh = keras.utils.to_categorical(y_tr, 10)
+y_val_oh = keras.utils.to_categorical(y_val, 10)
+y_test_oh = keras.utils.to_categorical(y_test, 10)
+
+optimizer = keras.optimizers.AdamW(weight_decay=1e-4)
+loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
+model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
 
 t0 = time.time()
-history = model.fit(x_train, y_train, epochs=num_epochs, batch_size=batch_size,
-                    validation_split=0.2, verbose=True)
+history = model.fit(x_tr, y_tr_oh, epochs=num_epochs, batch_size=batch_size,
+                    validation_data=(x_val, y_val_oh), verbose=True)
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
@@ -68,7 +82,7 @@ history_dict = history.history
 # --- Evaluation and structured output ---
 # Stats block is parsed by experiment tooling (grep "^test_accuracy:" run.log)
 
-test_loss, test_accuracy = model.evaluate(x_test, y_test)
+test_loss, test_accuracy = model.evaluate(x_test, y_test_oh)
 
 train_loss = history_dict["loss"][-1]
 train_accuracy = history_dict["accuracy"][-1]
