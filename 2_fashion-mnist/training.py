@@ -37,9 +37,9 @@ x_test = x_test / 255.0
 
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(512, activation="gelu"),
+    keras.layers.Dense(1024, activation="gelu"),
     keras.layers.BatchNormalization(),
-    keras.layers.Dropout(0.3),
+    keras.layers.Dropout(0.4),
     keras.layers.Dense(512, activation="gelu"),
     keras.layers.BatchNormalization(),
     keras.layers.Dropout(0.3),
@@ -73,7 +73,7 @@ lr_schedule = keras.optimizers.schedules.CosineDecay(
     initial_learning_rate=1e-3, decay_steps=num_epochs * steps_per_epoch,
     warmup_target=1e-3, warmup_steps=3 * steps_per_epoch
 )
-optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=1e-4)
+optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=5e-4)
 loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
 model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
 
