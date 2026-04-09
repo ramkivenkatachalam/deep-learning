@@ -68,7 +68,12 @@ y_tr_oh = keras.utils.to_categorical(y_tr, 10)
 y_val_oh = keras.utils.to_categorical(y_val, 10)
 y_test_oh = keras.utils.to_categorical(y_test, 10)
 
-optimizer = keras.optimizers.AdamW(weight_decay=1e-4)
+steps_per_epoch = len(x_tr) // batch_size
+lr_schedule = keras.optimizers.schedules.CosineDecay(
+    initial_learning_rate=1e-3, decay_steps=num_epochs * steps_per_epoch,
+    warmup_target=1e-3, warmup_steps=3 * steps_per_epoch
+)
+optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=1e-4)
 loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
 model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
 
