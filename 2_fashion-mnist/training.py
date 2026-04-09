@@ -33,46 +33,14 @@ labels = ["T-shirt/top",
 x_train = x_train / 255.0
 x_test = x_test / 255.0
 
-# Reshape for Conv2D: (N, 28, 28) -> (N, 28, 28, 1)
-x_train = x_train[..., np.newaxis]
-x_test = x_test[..., np.newaxis]
+# --- Model architecture (MLP only, no CNN) ---
 
-# Manual train/val split for proper augmentation
-val_split = 0.2
-num_val = int(len(x_train) * val_split)
-x_val, y_val = x_train[:num_val], y_train[:num_val]
-x_tr, y_tr = x_train[num_val:], y_train[num_val:]
-
-# --- Model architecture ---
-
-input = keras.Input(shape=(28, 28, 1))
-h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(input)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Conv2D(256, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(256, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Flatten()(h)
-h = keras.layers.Dense(512, activation="relu")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Dropout(0.5)(h)
-output = keras.layers.Dense(10, activation="softmax")(h)
-model = keras.Model(input, output)
+model = keras.Sequential([
+    keras.layers.Flatten(input_shape=(28, 28)),
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(10, activation="softmax"),
+])
 
 model.summary()
 
@@ -80,34 +48,15 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 80
-batch_size = 128
-steps_per_epoch = len(x_tr) // batch_size
-lr_schedule = keras.optimizers.schedules.CosineDecay(
-    initial_learning_rate=0.002, decay_steps=num_epochs * steps_per_epoch, warmup_target=0.002, warmup_steps=3 * steps_per_epoch
-)
-optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=5e-4)
-# Convert to one-hot for label smoothing
-y_tr_oh = keras.utils.to_categorical(y_tr, 10)
-y_val_oh = keras.utils.to_categorical(y_val, 10)
-y_test_oh = keras.utils.to_categorical(y_test, 10)
+num_epochs = 20
+batch_size = 64
 
-loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
-model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
-
-# Data augmentation via tf.data (train only)
-def augment(image, label):
-    image = tf.image.random_flip_left_right(image)
-    image = tf.pad(image, [[2, 2], [2, 2], [0, 0]], mode='REFLECT')
-    image = tf.image.random_crop(image, size=[28, 28, 1])
-    return image, label
-
-train_ds = tf.data.Dataset.from_tensor_slices((x_tr, y_tr_oh))
-train_ds = train_ds.shuffle(len(x_tr)).map(augment, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(tf.data.AUTOTUNE)
-val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val_oh)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+optimizer = keras.optimizers.Adam()
+model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 
 t0 = time.time()
-history = model.fit(train_ds, epochs=num_epochs, validation_data=val_ds, verbose=True)
+history = model.fit(x_train, y_train, epochs=num_epochs, batch_size=batch_size,
+                    validation_split=0.2, verbose=True)
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
@@ -115,7 +64,7 @@ history_dict = history.history
 # --- Evaluation and structured output ---
 # Stats block is parsed by experiment tooling (grep "^test_accuracy:" run.log)
 
-test_loss, test_accuracy = model.evaluate(x_test, y_test_oh)
+test_loss, test_accuracy = model.evaluate(x_test, y_test)
 
 train_loss = history_dict["loss"][-1]
 train_accuracy = history_dict["accuracy"][-1]

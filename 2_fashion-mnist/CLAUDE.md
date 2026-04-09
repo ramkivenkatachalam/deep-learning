@@ -8,14 +8,10 @@ Based on MIT 15.773 Hands-On Deep Learning (Spring 2024).
 - Pixel values normalized to [0, 1]
 - Validation split: 0.2 of training data
 
-## Current baseline
-- Architecture: Input(28,28) → Flatten → Dense(128, relu) → Dense(128, relu) → Dense(10, softmax)
-- Optimizer: Adam (default), Loss: sparse_categorical_crossentropy
-- Epochs: 20, Batch: 64, Validation split: 0.2
-- test_accuracy: TBD (run baseline to establish)
+## Constraints
+- **NO CNN layers.** Do not use Conv2D, MaxPooling2D, or any convolutional layers. MLP/Dense-only architectures.
 
 ## Ideas to try
-- Convolutional layers (Conv2D + MaxPool)
 - Dropout regularization
 - Batch normalization
 - Learning rate tuning
@@ -25,4 +21,6 @@ Based on MIT 15.773 Hands-On Deep Learning (Spring 2024).
 - Different activation functions
 - L2 weight regularization
 - Learning rate scheduling
-- Deeper/wider architectures
+- Deeper/wider dense architectures
+- Mixture of Experts
+- Skip connections between dense layers
