@@ -1,4 +1,4 @@
-# Fashion-MNIST Image Classifier
+# Fashion-MNIST Image Classifier (MLP Only)
 
 10-class image classification on [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) (70,000 grayscale images, 28x28). Part of MIT 15.773 Hands-On Deep Learning (Spring 2024).
 
@@ -6,10 +6,10 @@
 
 | | Accuracy | Architecture |
 |---|---|---|
-| **Baseline** | 87.46% | Flatten → Dense(128) x2 → Dense(10) |
-| **Best** | **94.94%** | 3 Conv blocks (64-128-256) → Dense(512) → Dense(10) |
+| **Baseline** | 73.93% | Flatten → Dense(128) x2 → Dense(10) |
+| **Best** | **90.34%** | Flatten → Dense(1024) → Dense(512) → Dense(256) → Dense(10) |
 
-**25 experiments** were run to reach the best result.
+**20 experiments** were run (MLP only, no CNN).
 
 ![Experiment results](experiments.png)
 
@@ -17,36 +17,35 @@
 
 - **Images**: 60,000 train / 10,000 test, 28x28 grayscale, normalized to [0, 1]
 - **Classes**: T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt, Sneaker, Bag, Ankle boot
-- **Augmentation**: Random horizontal flip + reflect padding with random crop (via tf.data)
-- **Validation**: 20% of training data (no augmentation)
+- **Validation**: 20% of training data
 
 ## Best model
 
 ```
-Conv2D(64)x2 + BatchNorm + MaxPool + Dropout(0.25)
-Conv2D(128)x2 + BatchNorm + MaxPool + Dropout(0.25)
-Conv2D(256)x2 + BatchNorm + MaxPool + Dropout(0.25)
-Dense(512) + BatchNorm + Dropout(0.5)
+Flatten(28x28)
+Dense(1024, gelu) + BatchNorm + Dropout(0.4)
+Dense(512, gelu) + BatchNorm + Dropout(0.3)
+Dense(256, gelu) + BatchNorm + Dropout(0.3)
 Dense(10, softmax)
 ```
 
-- **Optimizer**: AdamW, cosine decay LR schedule (initial 0.002, 3-step warmup), weight decay 5e-4
+- **Optimizer**: AdamW, cosine decay LR schedule (initial 1e-3, 3-epoch warmup), weight decay 5e-4
 - **Loss**: Categorical crossentropy with label smoothing 0.1
 - **Epochs**: 80, batch size 128
-- **Parameters**: 2,335,178
+- **Parameters**: 1,469,706
 
 ## Key findings
 
 **What improved accuracy:**
-- Switching from dense-only to CNN (87.46% → 89.24%)
-- Adding BatchNorm after conv layers (89.24% → 91.37%)
-- Deeper architecture with double conv blocks (91.37% → 93.09%)
-- ReduceLROnPlateau + larger batch size (93.09% → 94.00%)
-- Wider conv filters (64-128-256) + Dense(512) (94.00% → 94.49%)
-- Weight decay + more epochs (94.49% → 94.66%)
-- tf.data augmentation (flip + crop) at 80 epochs (94.66% → 94.94%)
+- GELU activation (single biggest win: 83.98% → 87.64%)
+- CosineDecay LR schedule with warmup (88.68% → 90.05%)
+- Wider layers (256 → 512 → 1024 first layer)
+- BatchNorm + Dropout (73.93% → 83.43%)
+- AdamW with weight decay + label smoothing
 
 **What didn't help:**
-- Higher learning rates without scheduling
-- 100 epochs (diminishing returns, risk of overfitting)
-- Label smoothing alone (marginal, kept as part of final config)
+- Data augmentation (hurts MLP — can't learn spatial invariance)
+- MLP-Mixer with patch mixing (underperformed simple wide MLP)
+- Skip/residual connections
+- SGD+momentum (worse than Adam for this MLP)
+- Very deep or very wide networks (diminishing returns)
