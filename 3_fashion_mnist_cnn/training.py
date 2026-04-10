@@ -29,14 +29,7 @@ x_test = x_test[..., np.newaxis]
 # --- Model architecture ---
 
 input = keras.Input(shape=(28, 28, 1))
-h = keras.layers.Conv2D(32, (3, 3), activation="relu", padding="same")(input)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(32, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(input)
 h = keras.layers.BatchNormalization()(h)
 h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
 h = keras.layers.BatchNormalization()(h)
@@ -46,6 +39,13 @@ h = keras.layers.Dropout(0.25)(h)
 h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
 h = keras.layers.BatchNormalization()(h)
 h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.MaxPooling2D((2, 2))(h)
+h = keras.layers.Dropout(0.25)(h)
+
+h = keras.layers.Conv2D(256, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.Conv2D(256, (3, 3), activation="relu", padding="same")(h)
 h = keras.layers.BatchNormalization()(h)
 h = keras.layers.MaxPooling2D((2, 2))(h)
 h = keras.layers.Dropout(0.25)(h)
@@ -63,7 +63,7 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 40
+num_epochs = 60
 batch_size = 128
 
 # Manual val split for label smoothing
@@ -85,9 +85,19 @@ optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=5e-4)
 loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
 model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
 
+# Data augmentation via tf.data (train only)
+def augment(image, label):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.pad(image, [[2, 2], [2, 2], [0, 0]], mode='REFLECT')
+    image = tf.image.random_crop(image, size=[28, 28, 1])
+    return image, label
+
+train_ds = tf.data.Dataset.from_tensor_slices((x_tr, y_tr_oh))
+train_ds = train_ds.shuffle(len(x_tr)).map(augment, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val_oh)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
 t0 = time.time()
-history = model.fit(x_tr, y_tr_oh, epochs=num_epochs, batch_size=batch_size,
-                    validation_data=(x_val, y_val_oh), verbose=True)
+history = model.fit(train_ds, epochs=num_epochs, validation_data=val_ds, verbose=True)
 training_seconds = round(time.time() - t0, 1)
 
 history_dict = history.history
