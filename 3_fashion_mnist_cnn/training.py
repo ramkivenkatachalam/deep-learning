@@ -29,12 +29,24 @@ x_test = x_test[..., np.newaxis]
 # --- Model architecture ---
 
 input = keras.Input(shape=(28, 28, 1))
-h = keras.layers.Conv2D(32, kernel_size=(2, 2), activation="relu")(input)
-h = keras.layers.MaxPooling2D(pool_size=(2, 2))(h)
-h = keras.layers.Conv2D(32, kernel_size=(2, 2), activation="relu")(h)
-h = keras.layers.MaxPooling2D(pool_size=(2, 2))(h)
+h = keras.layers.Conv2D(32, (3, 3), activation="relu", padding="same")(input)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.Conv2D(32, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.MaxPooling2D((2, 2))(h)
+h = keras.layers.Dropout(0.25)(h)
+
+h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.MaxPooling2D((2, 2))(h)
+h = keras.layers.Dropout(0.25)(h)
+
 h = keras.layers.Flatten()(h)
 h = keras.layers.Dense(256, activation="relu")(h)
+h = keras.layers.BatchNormalization()(h)
+h = keras.layers.Dropout(0.5)(h)
 output = keras.layers.Dense(10, activation="softmax")(h)
 model = keras.Model(input, output)
 
@@ -44,7 +56,7 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 10
+num_epochs = 20
 batch_size = 64
 
 optimizer = keras.optimizers.Adam()
