@@ -63,7 +63,7 @@ num_params = model.count_params()
 
 # --- Training ---
 
-num_epochs = 60
+num_epochs = 80
 batch_size = 128
 
 # Manual val split for label smoothing
@@ -78,8 +78,8 @@ y_test_oh = keras.utils.to_categorical(y_test, 10)
 
 steps_per_epoch = len(x_tr) // batch_size
 lr_schedule = keras.optimizers.schedules.CosineDecay(
-    initial_learning_rate=1e-3, decay_steps=num_epochs * steps_per_epoch,
-    warmup_target=1e-3, warmup_steps=3 * steps_per_epoch
+    initial_learning_rate=2e-3, decay_steps=num_epochs * steps_per_epoch,
+    warmup_target=2e-3, warmup_steps=3 * steps_per_epoch
 )
 optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=5e-4)
 loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
