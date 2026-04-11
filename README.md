@@ -7,7 +7,8 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 | Assignment | Dataset | Task | Baseline | Best | Experiments |
 |---|---|---|---|---|---|
 | [1_heart-disease](1_heart-disease/) | UCI Heart Disease (303 samples, 13 features) | Binary classification | 90.16% | **95.08%** | 44 |
-| [2_fashion-mnist](2_fashion-mnist/) | Fashion-MNIST (70k images, 28x28) | 10-class classification | 87.46% | **94.94%** | 25 |
+| [2_fashion-mnist](2_fashion-mnist/) | Fashion-MNIST (70k images, 28x28) | 10-class MLP | 73.93% | **90.34%** | 20 |
+| [3_fashion_mnist_cnn](3_fashion_mnist_cnn/) | Fashion-MNIST (70k images, 28x28) | 10-class CNN | 87.01% | **94.87%** | 8 |
 
 ## Setup
 
@@ -79,7 +80,12 @@ This generates an `experiments.png` chart showing all experiments, which ones we
 │   ├── training.py            # Training script
 │   ├── results.csv            # Experiment log (gitignored)
 │   └── experiments.png        # Results chart
-└── 2_fashion-mnist/
+├── 2_fashion-mnist/
+│   ├── CLAUDE.md
+│   ├── training.py
+│   ├── results.csv
+│   └── experiments.png
+└── 3_fashion_mnist_cnn/
     ├── CLAUDE.md
     ├── training.py
     ├── results.csv
