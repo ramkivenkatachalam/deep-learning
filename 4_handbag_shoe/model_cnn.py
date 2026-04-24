@@ -28,8 +28,8 @@ def build_cnn_augmented():
     input = keras.Input(shape=(224, 224, 3))
 
     h = keras.layers.RandomFlip("horizontal")(input)
-    h = keras.layers.RandomRotation(0.1)(h)
-    h = keras.layers.RandomZoom(0.2)(h)
+    h = keras.layers.RandomRotation(0.05)(h)
+    h = keras.layers.RandomZoom(0.1)(h)
 
     h = keras.layers.Rescaling(1.0 / 255)(h)
 
