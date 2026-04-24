@@ -3,6 +3,7 @@
 Each assignment lives in a numbered folder with a `training.py` file:
 - `1_heart-disease/` — UCI Heart Disease binary classifier
 - `2_fashion-mnist/` — Fashion-MNIST 10-class image classifier
+- `4_handbag_shoe/` — Handbag vs Shoe binary classifier (CNN + ResNet50 transfer learning)
 
 ## Autoresearch Protocol
 
