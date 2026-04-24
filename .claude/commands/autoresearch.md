@@ -1,23 +1,35 @@
 # Autoresearch: Autonomous Experiment Protocol
 
-Run autonomous deep learning experiments on the assignment folder: `$ARGUMENTS`
+Run autonomous deep learning experiments: `$ARGUMENTS`
+
+Arguments: `<folder>` or `<folder> <model>`
+- Single-model projects: `/autoresearch 1_heart-disease`
+- Multi-model projects: `/autoresearch 4_handbag_shoe cnn`
 
 ## Setup
 
-1. `cd` into the `$ARGUMENTS` folder.
-2. Read `CLAUDE.md` and `training.py` in that folder for full context.
-3. Read `results.csv` if it exists — this is your experiment history.
-4. Confirm setup looks good, then begin.
+1. Parse `$ARGUMENTS`: first word is the folder, second word (if present) is the model name.
+2. `cd` into the folder.
+3. Read `CLAUDE.md` and `training.py` in that folder for full context.
+4. If a model name was given, also read the model file specified in `CLAUDE.md` (e.g. `model_cnn.py`).
+5. Read `results.csv` if it exists — this is your experiment history.
+6. Confirm setup looks good, then begin.
+
+## Modifiable files
+
+- **Single-model** (no model arg): only `training.py`.
+- **Multi-model** (model arg given): `training.py` (hyperparams: LR, epochs, batch size, optimizer, loss) AND the model's builder file (architecture: layers, widths, depths, regularization). The folder's `CLAUDE.md` maps model names to files. Do NOT modify `common.py` or other model files.
 
 ## Rules
 
-**You CAN:** modify `training.py` — architecture, optimizer, hyperparameters, training loop, batch size, regularization, preprocessing, feature engineering. Everything is fair game.
+**You CAN:** modify hyperparameters, optimizer settings, regularization, preprocessing, and architecture tweaks (add/remove layers, change widths, add dropout/batchnorm, change activations).
 
 **You CANNOT:**
 - Install new packages or add dependencies beyond `pyproject.toml`
 - Change the dataset source or train/test split
-- Change the random seed (41)
+- Change the random seed
 - Modify the evaluation (test set metrics must remain honest)
+- Switch to a fundamentally different architecture (e.g. don't turn a CNN into a ResNet)
 
 **Goal: maximize test_accuracy.** Simpler is better — don't add complexity for marginal gains.
 
@@ -30,9 +42,13 @@ Run autonomous deep learning experiments on the assignment folder: `$ARGUMENTS`
 
 LOOP FOREVER:
 
-1. Edit `training.py` with an experimental idea.
-2. `git add training.py && git commit -m "description of change"`
-3. `uv run python training.py > run.log 2>&1`
+1. Edit the modifiable file(s) with an experimental idea.
+2. Stage and commit:
+   - Single-model: `git add training.py && git commit -m "description"`
+   - Multi-model: `git add training.py model_*.py && git commit -m "description"`
+3. Run training:
+   - Single-model: `uv run python training.py > run.log 2>&1`
+   - Multi-model: `uv run python training.py <model> > run.log 2>&1`
 4. `grep "^test_accuracy:\|^test_loss:\|^val_accuracy:" run.log`
 5. If grep is empty → crashed. `tail -n 50 run.log` to diagnose. Fix if trivial, skip if broken.
 6. Update status and description in `results.csv` for this run's row.

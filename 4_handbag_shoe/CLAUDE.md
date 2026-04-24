@@ -9,9 +9,13 @@ Based on MIT 15.773 Hands-On Deep Learning.
 - Binary classification (handbags=0, shoes=1)
 
 ## Models
-- `cnn` — Basic CNN: Rescaling → 2x Conv2D(32, 2x2)+MaxPool → Dense(1, sigmoid)
-- `cnn_augmented` — Same CNN with RandomFlip/RandomRotation/RandomZoom
-- `resnet50` — Frozen ResNet50 feature extraction → Dense(256) → Dropout → Dense(1, sigmoid)
+
+| Model | Builder file | Description |
+|-------|-------------|-------------|
+| `cnn` | `model_cnn.py` | Basic CNN: Rescaling → 2x Conv2D(32, 2x2)+MaxPool → Dense(1, sigmoid) |
+| `cnn_augmented` | `model_cnn.py` | Same CNN with RandomFlip/RandomRotation/RandomZoom |
+| `resnet50` | `model_resnet50.py` | Frozen ResNet50 feature extraction → Dense(256) → Dropout → Dense(1, sigmoid) |
+| `resnet50_e2e` | `model_resnet50.py` | End-to-end ResNet50 with augmentation, enables fine-tuning |
 
 ## Usage
 ```bash
