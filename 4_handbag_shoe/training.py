@@ -20,7 +20,7 @@ keras.utils.set_random_seed(42)
 # --- Configuration ---
 
 MODEL = "cnn"
-NUM_EPOCHS = 20
+NUM_EPOCHS = 40
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 32
 

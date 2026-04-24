@@ -33,13 +33,15 @@ def build_cnn_augmented():
 
     h = keras.layers.Rescaling(1.0 / 255)(h)
 
-    h = keras.layers.Conv2D(32, kernel_size=(2, 2), activation="relu", name="Conv_1")(h)
+    h = keras.layers.Conv2D(32, kernel_size=(3, 3), activation="relu", name="Conv_1")(h)
     h = keras.layers.MaxPool2D()(h)
 
-    h = keras.layers.Conv2D(32, kernel_size=(2, 2), activation="relu", name="Conv_2")(h)
+    h = keras.layers.Conv2D(32, kernel_size=(3, 3), activation="relu", name="Conv_2")(h)
     h = keras.layers.MaxPool2D()(h)
 
     h = keras.layers.Flatten()(h)
+    h = keras.layers.Dense(128, activation="relu")(h)
+    h = keras.layers.Dropout(0.5)(h)
     output = keras.layers.Dense(1, activation="sigmoid")(h)
 
     return keras.Model(input, output)
