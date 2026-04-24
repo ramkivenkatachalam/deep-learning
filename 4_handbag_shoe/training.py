@@ -20,12 +20,14 @@ keras.utils.set_random_seed(42)
 # --- Configuration ---
 
 MODEL = "cnn"
-NUM_EPOCHS = 40
+NUM_EPOCHS = {"cnn": 20, "cnn_augmented": 40, "resnet50": 20, "resnet50_e2e": 20}
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 32
 
 if len(sys.argv) > 1:
     MODEL = sys.argv[1]
+
+num_epochs = NUM_EPOCHS.get(MODEL, 20)
 
 # --- Data ---
 
@@ -45,7 +47,7 @@ if MODEL == "cnn":
     )
     model.summary()
     history = model.fit(
-        train_dataset, epochs=NUM_EPOCHS, validation_data=validation_dataset
+        train_dataset, epochs=num_epochs, validation_data=validation_dataset
     )
 
 elif MODEL == "cnn_augmented":
@@ -57,7 +59,7 @@ elif MODEL == "cnn_augmented":
     )
     model.summary()
     history = model.fit(
-        train_dataset, epochs=NUM_EPOCHS, validation_data=validation_dataset
+        train_dataset, epochs=num_epochs, validation_data=validation_dataset
     )
 
 elif MODEL == "resnet50":
@@ -77,7 +79,7 @@ elif MODEL == "resnet50":
     model.summary()
     history = model.fit(
         train_features, train_labels,
-        epochs=NUM_EPOCHS,
+        epochs=num_epochs,
         validation_data=(val_features, val_labels),
     )
 
@@ -90,7 +92,7 @@ elif MODEL == "resnet50_e2e":
     )
     model.summary()
     history = model.fit(
-        train_dataset, epochs=NUM_EPOCHS, validation_data=validation_dataset
+        train_dataset, epochs=num_epochs, validation_data=validation_dataset
     )
 
 else:

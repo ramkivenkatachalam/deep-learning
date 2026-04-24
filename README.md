@@ -9,6 +9,10 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 | [1_heart-disease](1_heart-disease/) | UCI Heart Disease (303 samples, 13 features) | Binary classification | 90.16% | **95.08%** | 44 |
 | [2_fashion-mnist](2_fashion-mnist/) | Fashion-MNIST (70k images, 28x28) | 10-class MLP | 73.93% | **90.34%** | 20 |
 | [3_fashion_mnist_cnn](3_fashion_mnist_cnn/) | Fashion-MNIST (70k images, 28x28) | 10-class CNN | 87.01% | **94.87%** | 8 |
+| [4_handbag_shoe](4_handbag_shoe/) | Handbags vs Shoes (224x224 RGB) | Binary CNN | 76.92% | **82.05%** | 6 |
+| | | Binary CNN + augmentation | 61.54% | **82.05%** | 4 |
+| | | Binary ResNet50 (feature extract) | 100% | **100%** | — |
+| | | Binary ResNet50 (end-to-end) | 100% | **100%** | — |
 
 ## Setup
 
@@ -31,10 +35,18 @@ cd 1_heart-disease
 uv run python training.py
 ```
 
+For multi-model projects, pass the model name:
+
+```bash
+cd 4_handbag_shoe
+uv run python training.py cnn
+```
+
 Or use the helper script to commit and run in one step:
 
 ```bash
 ../run_experiment.sh "description of change"
+../run_experiment.sh "widen conv layers" cnn    # multi-model
 ```
 
 ## Autoresearch
@@ -54,8 +66,11 @@ All experiments are tracked in `results.csv` (per assignment folder) and can be 
 Using the Claude Code slash command:
 
 ```
-/autoresearch 1_heart-disease
+/autoresearch 1_heart-disease              # single-model project
+/autoresearch 4_handbag_shoe cnn           # multi-model project
 ```
+
+For multi-model projects, autoresearch tunes one model at a time — modifying both `training.py` (hyperparameters) and the model's builder file (architecture). Each folder's `CLAUDE.md` maps model names to their files.
 
 - If `results.csv` has existing data, autoresearch **continues** from where it left off — it reviews past experiments and proposes new ideas informed by what worked and what didn't.
 - If no history exists, it **starts fresh** by running the baseline first.
@@ -85,9 +100,17 @@ This generates an `experiments.png` chart showing all experiments, which ones we
 │   ├── training.py
 │   ├── results.csv
 │   └── experiments.png
-└── 3_fashion_mnist_cnn/
+├── 3_fashion_mnist_cnn/
+│   ├── CLAUDE.md
+│   ├── training.py
+│   ├── results.csv
+│   └── experiments.png
+└── 4_handbag_shoe/
     ├── CLAUDE.md
-    ├── training.py
+    ├── common.py              # Shared: data loading, metrics, logging
+    ├── model_cnn.py           # CNN model builders
+    ├── model_resnet50.py      # ResNet50 model builders
+    ├── training.py            # Dispatcher: selects model via CLI arg
     ├── results.csv
     └── experiments.png
 ```
