@@ -12,7 +12,7 @@ import time
 import keras
 
 from common import prepare_data, load_datasets, print_metrics, log_results_csv
-from model_cnn import build_cnn, build_cnn_augmented
+from model_cnn import build_cnn, build_cnn_augmented, build_cnn_residual
 from model_resnet50 import get_resnet50_base, extract_features, build_resnet50_head, build_resnet50_e2e
 
 keras.utils.set_random_seed(42)
@@ -20,7 +20,7 @@ keras.utils.set_random_seed(42)
 # --- Configuration ---
 
 MODEL = "cnn"
-NUM_EPOCHS = {"cnn": 20, "cnn_augmented": 40, "resnet50": 20, "resnet50_e2e": 20}
+NUM_EPOCHS = {"cnn": 20, "cnn_augmented": 40, "cnn_residual": 40, "resnet50": 20, "resnet50_e2e": 20}
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 32
 
@@ -52,6 +52,18 @@ if MODEL == "cnn":
 
 elif MODEL == "cnn_augmented":
     model = build_cnn_augmented()
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+        loss="binary_crossentropy",
+        metrics=["accuracy"],
+    )
+    model.summary()
+    history = model.fit(
+        train_dataset, epochs=num_epochs, validation_data=validation_dataset
+    )
+
+elif MODEL == "cnn_residual":
+    model = build_cnn_residual()
     model.compile(
         optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
         loss="binary_crossentropy",
