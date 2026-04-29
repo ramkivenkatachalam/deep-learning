@@ -13,6 +13,8 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 | | | Binary CNN + augmentation | 61.54% | **82.05%** | 4 |
 | | | Binary ResNet50 (feature extract) | 100% | **100%** | — |
 | | | Binary ResNet50 (end-to-end) | 100% | **100%** | — |
+| [5_music_genre_classification](5_music_genre_classification/) | Song Lyrics (3 genres, BoW) | Unigram Dense | 73.06% | **74.08%** | — |
+| | | Bigram Dense | 74.25% | **74.25%** | — |
 
 ## Setup
 
@@ -105,12 +107,18 @@ This generates an `experiments.png` chart showing all experiments, which ones we
 │   ├── training.py
 │   ├── results.csv
 │   └── experiments.png
-└── 4_handbag_shoe/
+├── 4_handbag_shoe/
+│   ├── CLAUDE.md
+│   ├── common.py              # Shared: data loading, metrics, logging
+│   ├── model_cnn.py           # CNN model builders
+│   ├── model_resnet50.py      # ResNet50 model builders
+│   ├── training.py            # Dispatcher: selects model via CLI arg
+│   ├── results.csv
+│   └── experiments.png
+└── 5_music_genre_classification/
     ├── CLAUDE.md
     ├── common.py              # Shared: data loading, metrics, logging
-    ├── model_cnn.py           # CNN model builders
-    ├── model_resnet50.py      # ResNet50 model builders
+    ├── model_dense.py         # Dense model builders (unigram, bigram)
     ├── training.py            # Dispatcher: selects model via CLI arg
-    ├── results.csv
-    └── experiments.png
+    └── results.csv
 ```
