@@ -21,7 +21,7 @@ keras.utils.set_random_seed(42)
 # --- Configuration ---
 
 MODEL = "glove_frozen"
-NUM_EPOCHS = {"glove_frozen": 10, "glove_finetune": 10, "custom": 10}
+NUM_EPOCHS = {"glove_frozen": 30, "glove_finetune": 10, "custom": 10}
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 32
 MAX_TOKENS = 5000
