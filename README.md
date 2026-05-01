@@ -15,6 +15,9 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 | | | Binary ResNet50 (end-to-end) | 100% | **100%** | — |
 | [5_music_genre_classification](5_music_genre_classification/) | Song Lyrics (3 genres, BoW) | Unigram Dense | 73.06% | **74.08%** | — |
 | | | Bigram Dense | 74.25% | **74.25%** | — |
+| [6_standalone_word_embeddings](6_standalone_word_embeddings/) | Song Lyrics (3 genres, embeddings) | GloVe Frozen | TBD | TBD | — |
+| | | GloVe Fine-tune | TBD | TBD | — |
+| | | Custom Embedding | TBD | TBD | — |
 
 ## Setup
 
@@ -115,10 +118,17 @@ This generates an `experiments.png` chart showing all experiments, which ones we
 │   ├── training.py            # Dispatcher: selects model via CLI arg
 │   ├── results.csv
 │   └── experiments.png
-└── 5_music_genre_classification/
+├── 5_music_genre_classification/
+│   ├── CLAUDE.md
+│   ├── common.py              # Shared: data loading, metrics, logging
+│   ├── model_dense.py         # Dense model builders (unigram, bigram)
+│   ├── training.py            # Dispatcher: selects model via CLI arg
+│   └── results.csv
+└── 6_standalone_word_embeddings/
     ├── CLAUDE.md
-    ├── common.py              # Shared: data loading, metrics, logging
-    ├── model_dense.py         # Dense model builders (unigram, bigram)
+    ├── common.py              # Shared: data loading, GloVe loading, metrics
+    ├── model_embedding.py     # Embedding model builders
     ├── training.py            # Dispatcher: selects model via CLI arg
+    ├── embeddings.ipynb       # Original course notebook
     └── results.csv
 ```

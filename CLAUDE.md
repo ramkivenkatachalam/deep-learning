@@ -5,6 +5,7 @@ Each assignment lives in a numbered folder with a `training.py` file:
 - `2_fashion-mnist/` — Fashion-MNIST 10-class image classifier
 - `4_handbag_shoe/` — Handbag vs Shoe binary classifier (CNN + ResNet50 transfer learning)
 - `5_music_genre_classification/` — Music genre from lyrics, 3-class classifier (dense BoW models)
+- `6_standalone_word_embeddings/` — Music genre from lyrics, 3-class classifier (word embedding models)
 
 ## Autoresearch Protocol
 

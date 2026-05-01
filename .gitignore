@@ -6,3 +6,7 @@ run.log
 results.csv
 **/data/
 
+# GloVe embeddings
+glove.6B.zip
+glove.6B*.txt
+
