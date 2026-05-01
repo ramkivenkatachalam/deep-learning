@@ -31,7 +31,6 @@ def build_glove_finetune(embedding_matrix, max_tokens, embedding_dim, max_length
         embedding_dim,
         embeddings_initializer=keras.initializers.Constant(embedding_matrix),
         trainable=True,
-        mask_zero=True,
         name="Embedding",
     )
 
