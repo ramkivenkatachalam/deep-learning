@@ -16,7 +16,9 @@ def build_glove_frozen(embedding_matrix, max_tokens, embedding_dim, max_length):
 
     input = keras.Input(shape=(max_length,), name="input")
     x = embedding_layer(input)
-    x = keras.layers.GlobalAveragePooling1D()(x)
+    avg = keras.layers.GlobalAveragePooling1D()(x)
+    mx = keras.layers.GlobalMaxPooling1D()(x)
+    x = keras.layers.Concatenate()([avg, mx])
     x = keras.layers.Dense(64, activation="relu")(x)
     output = keras.layers.Dense(3, activation="softmax")(x)
     return keras.Model(inputs=input, outputs=output)
