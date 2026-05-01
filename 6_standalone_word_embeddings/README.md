@@ -18,9 +18,9 @@ All models share: Embedding → GlobalAveragePooling1D → Dense(8, relu) → De
 
 | Model | Test Accuracy | Val Accuracy |
 |-------|--------------|--------------|
-| `glove_frozen` | TBD | TBD |
-| `glove_finetune` | TBD | TBD |
-| `custom` | TBD | TBD |
+| `glove_frozen` | 61.20% | 61.94% |
+| `glove_finetune` | 71.24% | 71.67% |
+| `custom` | 70.81% | 71.13% |
 
 ## Setup
 
