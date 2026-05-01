@@ -11,7 +11,6 @@ def build_glove_frozen(embedding_matrix, max_tokens, embedding_dim, max_length):
         embedding_dim,
         embeddings_initializer=keras.initializers.Constant(embedding_matrix),
         trainable=False,
-        mask_zero=True,
         name="Embedding",
     )
 
