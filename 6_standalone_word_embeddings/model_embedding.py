@@ -55,5 +55,6 @@ def build_custom(max_tokens, embedding_dim, max_length):
     x = embedding_layer(input)
     x = keras.layers.GlobalAveragePooling1D()(x)
     x = keras.layers.Dense(16, activation="relu")(x)
+    x = keras.layers.Dropout(0.3)(x)
     output = keras.layers.Dense(3, activation="softmax")(x)
     return keras.Model(inputs=input, outputs=output)
