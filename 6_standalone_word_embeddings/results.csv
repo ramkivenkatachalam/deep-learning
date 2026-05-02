@@ -1,0 +1,38 @@
+commit,test_accuracy,test_loss,val_accuracy,val_loss,num_params,training_seconds,status,description
+5bed9dc,0.6120,0.8181,0.6194,0.8024,500835,172.5,keep,glove_frozen baseline Dense(8) 10ep
+d6069e8,0.6294,0.8045,0.6354,0.7938,506659,170.3,keep,glove_frozen widen Dense(8)->Dense(64)
+ff4bd54,0.6296,0.8069,0.6379,0.7956,506659,506.5,keep,glove_frozen epochs 10->30
+6b79503,0.6270,0.8129,0.6324,0.7997,506659,510.4,discard,glove_frozen add Dropout(0.3)
+5a5f35b,0.5956,0.9692,0.6037,0.9409,506659,508.9,discard,glove_frozen LR 1e-3->3e-3
+4780456,0.6275,0.8126,0.6348,0.7992,513315,403.2,discard,glove_frozen widen Dense(64)->Dense(128)
+3c21d7e,0.6289,0.8049,0.6339,0.7919,506659,404.9,discard,glove_frozen LR 1e-3->5e-4
+960480a,0.6215,0.8146,0.6265,0.7994,506659,209.7,discard,glove_frozen batch_size 32->64
+ca9cce3,0.6274,0.8095,0.6350,0.7977,506659,398.5,discard,glove_frozen max_length 300->150
+038a2d8,0.6290,0.8091,0.6354,0.7967,506659,412.9,discard,glove_frozen max_length 300->500
+8fd6a15,0.6789,0.7447,0.6867,0.7279,506659,440.6,keep,glove_frozen disable mask_zero
+1a0870e,0.6784,0.7451,0.6874,0.7286,506659,832.4,discard,glove_frozen epochs 30->50
+527f38f,0.5473,1.5024,0.5537,1.4913,508643,510.1,discard,glove_frozen add second Dense(32) layer
+090a560,0.6434,0.7745,0.6598,0.7514,506659,472.0,discard,glove_frozen GlobalAvgPool->GlobalMaxPool
+cff72d6,0.6934,0.7119,0.7050,0.6890,506659,440.0,keep,glove_frozen concat AvgPool+MaxPool
+46bfa37,0.6044,4.1355,0.6090,4.1298,513859,533.1,discard,glove_frozen add BatchNorm before Dense
+4955401,0.6930,0.7129,0.7032,0.6900,1006659,440.0,discard,glove_frozen max_tokens 5000->10000
+c9406c2,0.6917,0.7163,0.7019,0.6930,513315,440.0,discard,glove_frozen Dense(64)->Dense(128) with concat
+2f1f0e8,0.7010,0.6895,0.7093,0.6689,1025859,511.7,keep,glove_frozen embedding_dim 100->200
+7ff6fe5,0.7129,0.6662,0.7221,0.6436,1538659,506.4,keep,glove_frozen embedding_dim 200->300
+8033439,0.7102,0.6713,0.7200,0.6485,1577315,8446.7,discard,glove_frozen Dense(64)->Dense(128) with 300d
+8261d2e,0.7122,0.6679,0.7215,0.6468,1538659,6020.9,discard,glove_frozen epochs 30->20
+7ff6fe5,0.7055,0.6870,0.7085,0.6735,1502435,2990.5,keep,glove_finetune baseline (300d Dense(8) mask_zero 10ep)
+b1a49d1,0.6804,1.0892,0.6824,1.0783,1538659,3186.0,discard,glove_finetune all frozen learnings at once
+bea8f0d,0.7284,0.7807,0.7312,0.7651,1502435,29209.0,keep,glove_finetune disable mask_zero
+5702ada,0.7222,0.6334,0.7267,0.6203,1504835,250.5,discard,glove_finetune add concat AvgPool+MaxPool
+1457245,0.7240,0.6754,0.7279,0.6613,1519459,238.4,discard,glove_finetune widen Dense(8)->Dense(64)
+09ef3c4,0.7294,0.8235,0.7292,0.8045,1502435,474.6,keep,glove_finetune epochs 10->20
+b921d26,0.7229,0.6571,0.7270,0.6452,1502435,466.2,discard,glove_finetune LR 1e-3->5e-4
+4a2e42a,0.7241,0.6502,0.7260,0.6390,1502435,524.7,discard,glove_finetune add Dropout(0.3)
+09ef3c4,0.6925,0.7078,0.6987,0.6997,1502435,246.9,keep,custom baseline (300d Dense(8) mask_zero 10ep)
+933996f,0.7007,0.7012,0.7030,0.6915,1502435,233.7,keep,custom disable mask_zero
+5e457f7,0.7177,0.8572,0.7175,0.8378,1502435,491.7,keep,custom epochs 10->20
+99e78a5,0.7264,0.7646,0.7267,0.7476,1504867,506.7,keep,custom widen Dense(8)->Dense(16)
+3100d2d,0.7205,1.0700,0.7188,1.0503,1509731,449.6,discard,custom widen Dense(16)->Dense(32)
+b950437,0.7270,0.8600,0.7244,0.8374,1504867,492.5,keep,custom add Dropout(0.3)
+179f1c8,0.7266,0.8173,0.7269,0.7981,1504867,718.3,discard,custom epochs 20->30

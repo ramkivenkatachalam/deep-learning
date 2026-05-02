@@ -88,12 +88,19 @@ uv run python plot_results.py 1_heart-disease
 
 This generates an `experiments.png` chart showing all experiments, which ones were kept, and the running best accuracy.
 
+For multi-model projects, generate per-model charts:
+
+```bash
+uv run python plot_results_by_model.py 6_standalone_word_embeddings
+```
+
 ## Project structure
 
 ```
 ├── new_project.sh             # Scaffold a new project
 ├── run_experiment.sh          # Commit + run helper
-├── plot_results.py            # Results visualization
+├── plot_results.py            # Results visualization (all experiments)
+├── plot_results_by_model.py   # Per-model charts (multi-model projects)
 ├── pyproject.toml             # Shared dependencies
 ├── 1_heart-disease/
 │   ├── CLAUDE.md              # Assignment context and ideas
