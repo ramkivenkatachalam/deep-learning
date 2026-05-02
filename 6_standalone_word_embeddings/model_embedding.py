@@ -48,7 +48,6 @@ def build_custom(max_tokens, embedding_dim, max_length):
         max_tokens,
         embedding_dim,
         trainable=True,
-        mask_zero=True,
         name="Embedding",
     )
 
