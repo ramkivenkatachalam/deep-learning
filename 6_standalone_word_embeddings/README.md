@@ -8,19 +8,17 @@ Based on MIT 15.773 Hands-On Deep Learning.
 
 | Model | Embedding | Trainable | Description |
 |-------|-----------|-----------|-------------|
-| `glove_frozen` | GloVe 100d | No | Pre-trained embeddings held fixed during training |
-| `glove_finetune` | GloVe 100d | Yes | Pre-trained embeddings updated during training |
-| `custom` | Random init 100d | Yes | Embeddings learned from scratch |
-
-All models share: Embedding → GlobalAveragePooling1D → Dense(8, relu) → Dense(3, softmax)
+| `glove_frozen` | GloVe 300d | No | Pre-trained embeddings held fixed during training |
+| `glove_finetune` | GloVe 300d | Yes | Pre-trained embeddings updated during training |
+| `custom` | Random init 300d | Yes | Embeddings learned from scratch |
 
 ## Results
 
-| Model | Test Accuracy | Val Accuracy |
-|-------|--------------|--------------|
-| `glove_frozen` | 61.20% | 61.94% |
-| `glove_finetune` | 71.24% | 71.67% |
-| `custom` | 70.81% | 71.13% |
+| Model | Baseline | Best | Experiments |
+|-------|----------|------|-------------|
+| `glove_frozen` | 61.20% | **71.29%** | 22 |
+| `glove_finetune` | 70.55% | **72.94%** | 8 |
+| `custom` | 69.25% | **72.70%** | 7 |
 
 ## Setup
 
@@ -28,7 +26,7 @@ GloVe embeddings must be downloaded to this directory:
 
 ```bash
 wget http://nlp.stanford.edu/data/glove.6B.zip
-unzip -q glove.6B.zip glove.6B.100d.txt
+unzip -q glove.6B.zip glove.6B.300d.txt
 ```
 
 ## Usage

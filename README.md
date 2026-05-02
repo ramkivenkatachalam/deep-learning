@@ -15,9 +15,9 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 | | | Binary ResNet50 (end-to-end) | 100% | **100%** | — |
 | [5_music_genre_classification](5_music_genre_classification/) | Song Lyrics (3 genres, BoW) | Unigram Dense | 73.06% | **74.08%** | — |
 | | | Bigram Dense | 74.25% | **74.25%** | — |
-| [6_standalone_word_embeddings](6_standalone_word_embeddings/) | Song Lyrics (3 genres, embeddings) | GloVe Frozen | 61.20% | **61.20%** | — |
-| | | GloVe Fine-tune | 71.24% | **71.24%** | — |
-| | | Custom Embedding | 70.81% | **70.81%** | — |
+| [6_standalone_word_embeddings](6_standalone_word_embeddings/) | Song Lyrics (3 genres, embeddings) | GloVe Frozen | 61.20% | **71.29%** | 22 |
+| | | GloVe Fine-tune | 70.55% | **72.94%** | 8 |
+| | | Custom Embedding | 69.25% | **72.70%** | 7 |
 
 ## Setup
 
