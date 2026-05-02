@@ -43,7 +43,7 @@ def build_glove_finetune(embedding_matrix, max_tokens, embedding_dim, max_length
 
 
 def build_custom(max_tokens, embedding_dim, max_length):
-    """Random-init embedding (trainable) → GlobalAvgPool → Dense(8) → Dense(3)."""
+    """Random-init embedding (trainable) → GlobalAvgPool → Dense(16) → Dense(3)."""
     embedding_layer = keras.layers.Embedding(
         max_tokens,
         embedding_dim,
@@ -54,6 +54,6 @@ def build_custom(max_tokens, embedding_dim, max_length):
     input = keras.Input(shape=(max_length,), name="input")
     x = embedding_layer(input)
     x = keras.layers.GlobalAveragePooling1D()(x)
-    x = keras.layers.Dense(8, activation="relu")(x)
+    x = keras.layers.Dense(16, activation="relu")(x)
     output = keras.layers.Dense(3, activation="softmax")(x)
     return keras.Model(inputs=input, outputs=output)
