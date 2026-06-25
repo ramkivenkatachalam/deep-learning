@@ -1,6 +1,6 @@
 # Deep Learning
 
-Projects for MIT Deep Learning certification. Each project starts with a baseline model, then uses an autonomous experiment harness ([autoresearch](#autoresearch)) to iteratively tune architecture, hyperparameters, and regularization.
+Projects for MIT Deep Learning certification. Each project starts with a baseline model based on the notebook covered in the class, then uses an autonomous experiment harness ([autoresearch](#autoresearch)) to iteratively tune architecture, hyperparameters, and regularization. The other extension is that we also have pytorch implementations for each of the projects in addtion to keras.
 
 ## Results
 

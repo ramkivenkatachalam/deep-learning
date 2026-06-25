@@ -1,0 +1,34 @@
+commit,test_accuracy,test_loss,val_accuracy,val_loss,num_params,training_seconds,status,description,model,framework
+4c7b362,0.9344,0.2373,0.7551,0.6055,497,34.6,pending,,default,keras
+4c7b362,0.8689,0.2854,0.7917,0.4849,497,1.2,pending,,default,torch
+50a8ea1,0.8525,0.3670,0.7708,0.5516,497,1.1,discard,torch: LR 0.0005->0.001,default,torch
+236dc12,0.8689,0.3178,0.7500,0.5999,993,1.2,discard,torch: widen Dense(16)->Dense(32),default,torch
+10f2e5f,0.9180,0.2939,0.7500,0.6759,625,1.3,keep,torch: add second hidden Dense(16)->Dense(8),default,torch
+d1894b6,0.8689,0.4879,0.7708,0.8172,625,1.2,discard,torch: remove Dropout(0.3),default,torch
+2585048,0.8689,0.2877,0.6667,0.4792,673,3.6,discard,torch: add BatchNorm before each ReLU,default,torch
+93a8ce2,0.9180,0.2920,0.7708,0.6693,625,1.3,keep,torch: Adam->AdamW weight_decay=0.01,default,torch
+7df147c,0.8852,0.4156,0.7292,0.7811,625,1.3,discard,torch: Dropout(0.3)->Dropout(0.1),default,torch
+708aba2,0.9180,0.5376,0.7292,1.1571,625,2.0,discard,torch: epochs 500->1000,default,torch
+535fa05,0.9180,0.3169,0.7708,0.7104,625,1.3,discard,torch: ReLU->LeakyReLU(0.1),default,torch
+c350eea,0.8852,0.6156,0.7500,1.1336,1505,1.3,discard,torch: widen Dense(32)->Dense(16)->Dense(1),default,torch
+b16edcd,0.9180,0.2374,0.7708,0.5350,625,1.4,keep,torch: LR 0.0005->0.0003,default,torch
+694cba8,0.9016,0.2388,0.7708,0.5241,625,1.3,discard,torch: add Dropout(0.2) after second hidden,default,torch
+d804385,0.9180,0.3321,0.7500,0.7256,625,1.8,discard,torch: batch_size 32->16,default,torch
+2a18435,0.8361,0.3123,0.7917,0.5779,625,1.4,discard,torch: add He weight init,default,torch
+baee148,0.9180,0.2360,0.7708,0.5310,625,1.3,keep,torch: weight_decay 0.01->0.05,default,torch
+3583c93,0.9016,0.2780,0.7708,0.6139,657,1.4,discard,torch: add third hidden Dense(8)->Dense(4),default,torch
+da01140,0.9016,0.2377,0.7551,0.5880,625,39.7,discard,keras: add second hidden Dense(8),default,keras
+2d483ac,0.9344,0.2373,0.7551,0.6055,497,34.1,keep,keras: restore LR 0.0003->0.0005 (re-establish baseline),default,keras
+35fc38a,0.9016,0.2644,0.7551,0.6667,993,34.5,discard,keras: widen Dense(16)->Dense(32),default,keras
+687a8d5,0.9344,0.2409,0.7551,0.6114,497,34.5,discard,keras: Dropout(0.3)->Dropout(0.2),default,keras
+cfbb006,0.9344,0.2381,0.7551,0.6051,497,35.9,discard,keras: Adam->AdamW weight_decay=0.01,default,keras
+eecb594,0.9344,0.2393,0.7551,0.6025,497,54.8,discard,keras: epochs 500->800,default,keras
+2655a3c,0.8852,0.2958,0.7551,0.5868,497,36.7,discard,keras: add L2(0.01) regularization,default,keras
+333e954,0.9016,0.2521,0.7551,0.5943,745,35.3,discard,keras: Dense(16)->Dense(24),default,keras
+a07934f,0.8689,0.2559,0.7347,0.6345,497,24.8,discard,keras: batch_size 32->64,default,keras
+2616bc8,0.9180,0.2487,0.7551,0.6457,497,33.5,discard,keras: remove Dropout(0.3),default,keras
+5721ac5,0.8689,0.2662,0.7917,0.4526,497,1.2,pending,,default,torch
+5721ac5,0.8852,0.2431,0.7708,0.4745,497,1.2,pending,,default,torch
+5721ac5,0.9016,0.2349,0.7500,0.4082,625,1.3,pending,,default,torch
+c87d297,0.9180,0.2360,0.7708,0.5310,625,1.3,pending,,default,torch
+c87d297,0.9344,0.2373,0.7551,0.6055,497,35.1,pending,,default,keras
