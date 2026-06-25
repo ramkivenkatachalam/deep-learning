@@ -39,12 +39,17 @@ Dense(10, softmax)
 ## Key findings
 
 **What improved accuracy:**
-- Deeper/wider conv blocks (32 → 64-128-256) with BatchNorm + Dropout
-- AdamW with CosineDecay LR + warmup (93.32% → 94.01%)
-- tf.data augmentation: flip + reflect pad + random crop (94.01% → 94.71%)
-- More epochs with higher LR and warmup (94.71% → 94.87%)
+
+- **Deeper/wider conv blocks with BatchNorm + Dropout (87.01% → 93.32%)** — The baseline had only 2 conv layers with 32 filters each. Scaling to 3 blocks (64-128-256) with paired convolutions gives the network enough capacity to learn hierarchical features: edges → textures → garment structures. BatchNorm stabilizes training at each layer, and per-block Dropout(0.25) prevents overfitting while keeping enough signal flowing.
+
+- **AdamW with CosineDecay LR + warmup (93.32% → 94.01%)** — CosineDecay starts with a warmup phase (small LR while weights are random), then takes large steps to explore broadly, and gradually anneals to settle precisely into a minimum. AdamW's decoupled weight decay regularizes without interfering with the adaptive learning rates.
+
+- **tf.data augmentation: flip + reflect pad + random crop (94.01% → 94.71%)** — Unlike the MLP project where augmentation hurt, CNNs are designed to be spatially aware. Horizontal flips teach left-right invariance (a shoe is a shoe facing either way). Reflect padding + random crop simulates slight translations without introducing black borders. This effectively multiplies the training set size.
+
+- **More epochs with higher initial LR and warmup (94.71% → 94.87%)** — With augmentation generating new variations each epoch, the network benefits from more passes. A higher initial LR (2e-3 vs 1e-3) explores more aggressively during the cosine decay middle phase.
 
 **What didn't help:**
-- GELU activation (94.76% but 18x slower on CPU — not worth it)
-- Stronger augmentation with brightness jitter (worse)
-- Lower dropout + higher weight decay (test accuracy worse)
+
+- **GELU activation** — Achieved 94.76% (comparable) but was 18x slower on CPU than ReLU. CNNs apply activations millions of times per forward pass, so the smooth gradient benefit doesn't justify the cost. GELU helped the MLP project where the bottleneck was expressiveness, not here.
+- **Stronger augmentation with brightness jitter** — Adding brightness variation introduced too much noise. Fashion-MNIST is grayscale with consistent lighting — jittering brightness changes the semantic content (dark vs light clothing).
+- **Lower dropout + higher weight decay** — Reducing Dropout from 0.25 to 0.15 while increasing weight decay wasn't a good trade. Dropout's stochastic regularization is more effective for conv layers than the uniform penalty of weight decay.

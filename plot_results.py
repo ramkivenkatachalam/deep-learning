@@ -55,24 +55,52 @@ def plot_chart(ax, sub_df, chart_title):
     best_so_far = sub_df['test_accuracy'].cummax()
     ax.step(sub_df.index, best_so_far, where='mid', color='#e74c3c', linewidth=2)
 
-    for i, row in sub_df[sub_df['status'] == 'keep'].iterrows():
-        label = row['description']
-        if len(label) > 35:
-            label = label[:32] + '...'
-        ax.annotate(
-            label,
-            xy=(i, row['test_accuracy']),
-            xytext=(0, 12), textcoords='offset points',
-            ha='center', va='bottom', fontsize=7,
-            fontweight='bold', color='#2c3e50',
-            arrowprops=dict(arrowstyle='-', color='#2c3e50', lw=0.8),
-        )
+    # Add accuracy % label on top of each bar
+    for i, row in sub_df.iterrows():
+        ax.text(i, row['test_accuracy'] + 0.003, f"{row['test_accuracy']:.1%}",
+                ha='center', va='bottom', fontsize=7, color='#666666', rotation=90)
+
+    # Annotate only experiments that set a new best (best_so_far increases)
+    prev_best = 0.0
+    annotation_idx = 0
+    for i, row in sub_df.iterrows():
+        if best_so_far[i] > prev_best and row['status'] == 'keep':
+            delta = row['test_accuracy'] - (prev_best if prev_best > 0 else row['test_accuracy'])
+            # Skip annotations where improvement rounds to 0.0%
+            if prev_best > 0 and delta < 0.0005:
+                prev_best = best_so_far[i]
+                continue
+            label = row['description']
+            if len(label) > 50:
+                label = label[:47] + '...'
+            if delta > 0:
+                label = f"+{delta:.1%}: {label}"
+
+            # Stagger annotation heights to avoid overlap
+            y_offset = 30 + (annotation_idx % 3) * 25
+            ax.annotate(
+                label,
+                xy=(i, row['test_accuracy']),
+                xytext=(0, y_offset), textcoords='offset points',
+                ha='center', va='bottom', fontsize=8,
+                fontweight='bold', color='#2c3e50',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='#ffffcc', edgecolor='#cccc00', alpha=0.9),
+                arrowprops=dict(arrowstyle='->', color='#2c3e50', lw=1.0),
+            )
+            annotation_idx += 1
+        prev_best = best_so_far[i]
 
     ax.set_xlabel('Experiment #', fontsize=11)
     ax.set_ylabel('Test Accuracy', fontsize=11)
     ax.set_title(chart_title, fontsize=13, fontweight='bold')
-    ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1, decimals=0))
+    ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1, decimals=1))
+
+    # Zoom y-axis to relevant range instead of starting at 0
     if len(sub_df) > 0:
+        y_min = sub_df['test_accuracy'].min()
+        y_max = sub_df['test_accuracy'].max()
+        margin = (y_max - y_min) * 0.3 if y_max > y_min else 0.05
+        ax.set_ylim(max(0, y_min - margin), min(1.0, y_max + margin + 0.08))
         ax.axhline(y=sub_df['test_accuracy'].iloc[0], color='#3498db', linestyle='--', linewidth=1, alpha=0.7)
     ax.grid(axis='y', alpha=0.3)
 

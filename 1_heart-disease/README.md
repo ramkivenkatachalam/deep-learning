@@ -39,18 +39,26 @@ python training.py --torch   # PyTorch
 
 ## Key findings
 
-**Keras (10 experiments):**
-- Original baseline was already well-optimized at 93.44%
-- No change improved accuracy — wider layers, deeper networks, different optimizers, regularization, batch sizes all equal or worse
+### What improved accuracy
 
-**PyTorch (16 experiments):**
-- Baseline started at 86.89% with the same architecture as Keras
-- Adding a second hidden layer Dense(8) jumped to 91.80%
-- AdamW with weight decay and lower LR improved loss without changing accuracy
-**Why PyTorch trails Keras by ~1.6%:**
+- **Adding a second hidden layer Dense(8) — PyTorch 86.89% → 91.80%** — The single biggest jump. With only 21 input features and a tiny dataset, a single Dense(16) layer can't learn enough non-linear feature combinations. The extra Dense(8) layer lets the network compose features hierarchically — first layer finds patterns, second layer combines them. This was the key to closing the gap with Keras.
+
+- **AdamW with weight decay — PyTorch** — Switching from Adam to AdamW with weight_decay=0.05 didn't change test accuracy (still 91.80%) but significantly improved validation loss (0.29 → 0.24). Weight decay penalizes large weights, pushing toward simpler solutions. On a dataset this small, preventing the model from memorizing a few outlier patients matters.
+
+- **Lower learning rate 0.0005 → 0.0003 — PyTorch** — Again same accuracy but better loss. The deeper architecture needed a gentler learning rate to converge to a better minimum rather than bouncing around it.
+
+- **Keras baseline already optimal at 93.44%** — The original single-layer architecture was already the best for Keras. 10 experiments (wider layers, deeper networks, AdamW, L2, different batch sizes, more epochs) all matched or worsened accuracy. When a simple model already fits the data well, adding complexity just adds ways to overfit.
+
+### What didn't help
+
+- **Batch normalization** — With only 242 training samples and batch size 32, each batch has ~7 samples. BatchNorm statistics are too noisy at this scale to be useful, and added parameters just increase overfitting risk.
+- **L2 regularization** — Hurt accuracy (93.44% → 88.52% in Keras). The models are already small enough that weight magnitudes aren't a problem.
+- **He weight initialization** — Dropped PyTorch to 83.61%. PyTorch's default Kaiming uniform init already uses a similar strategy; switching to the exact He normal variant changed the starting point in a way that the optimizer couldn't recover from on this tiny dataset.
+- **LeakyReLU, wider/narrower layers** — No improvement. The bottleneck isn't activation saturation or model capacity — it's the limited data.
+- **More epochs (500 → 800–1000)** — Same or worse accuracy with increasing validation loss. Classic overfitting on a small dataset.
+- **Removing Dropout** — Accuracy dropped (91.80% → 86.89% in PyTorch). With so few samples, Dropout is essential to prevent co-adaptation of neurons.
+- **Larger batch sizes (32 → 64)** — Reduced accuracy in Keras (93.44% → 86.89%). Smaller batches provide more gradient noise, which acts as implicit regularization — important when you only have 242 training samples.
+
+### Why PyTorch trails Keras by ~1.6%
+
 The same single-layer architecture gets 93.44% in Keras but only 86.89% in PyTorch. Testing with matched validation splits (Keras takes the last 20%, PyTorch uses a random permutation) closed the gap partially (86.89% → 88.52%), but ~5 points remain due to different default weight initialization between the frameworks. With only 303 samples, these small differences get amplified. PyTorch needed a deeper architecture to compensate.
-
-**What didn't help (either framework):**
-- Batch normalization, L2 regularization, He weight init
-- LeakyReLU, wider/narrower layers, different batch sizes
-- More epochs beyond 500 (overfitting)
