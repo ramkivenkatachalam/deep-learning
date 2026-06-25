@@ -7,6 +7,13 @@ Each assignment lives in a numbered folder with a `training.py` file:
 - `5_music_genre_classification/` — Music genre from lyrics, 3-class classifier (dense BoW models)
 - `6_standalone_word_embeddings/` — Music genre from lyrics, 3-class classifier (word embedding models)
 
+## PyTorch support
+Add `--torch` to run with PyTorch instead of Keras (default):
+```
+python training.py --torch              # single-model folders
+python training.py cnn --torch          # multi-model folders
+```
+
 ## Autoresearch Protocol
 
 Run `/autoresearch <folder> [model]` to start autonomous experiments.

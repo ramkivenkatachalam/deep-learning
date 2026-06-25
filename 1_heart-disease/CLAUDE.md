@@ -7,11 +7,22 @@ Based on MIT 15.773 Hands-On Deep Learning (Spring 2024).
 - Train/test split: 80/20 with random_state=41
 - Source: http://storage.googleapis.com/download.tensorflow.org/data/heart.csv
 
-## Current baseline
-- Architecture: Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid)
-- Optimizer: Adam (LR=0.0005), Loss: binary_crossentropy
+## Usage
+```
+python training.py           # Keras (default)
+python training.py --torch   # PyTorch
+```
+
+## File structure
+- `training.py` — main entry point, framework dispatch
+- `common.py` — data loading, metrics output, CSV logging (framework-agnostic)
+- `model_keras.py` — Keras model builder
+- `model_torch.py` — PyTorch model, training loop, evaluation
+
+## Current best
+- **Keras:** Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid), Adam LR=0.0005 — test_accuracy: 0.9344
+- **PyTorch:** Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(8, relu) → Dense(1, sigmoid), AdamW LR=0.0003 wd=0.05 — test_accuracy: 0.9180
 - Epochs: 500, Batch: 32, Validation split: 0.2
-- test_accuracy: 0.9508
 
 ## Ideas to try
 - More/fewer hidden units

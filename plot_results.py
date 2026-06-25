@@ -26,11 +26,17 @@ folder_name = os.path.basename(os.path.abspath(folder))
 title_base = folder_name.lstrip('0123456789').lstrip('_')
 title = title_base.replace('-', ' ').replace('_', ' ').title()
 
-# Description column may contain commas, so split on first 8 only
+# Detect column count from header; split accordingly to keep description intact
 lines = open(results_path).readlines()
-header = lines[0].strip().split(',', 8)
-rows = [line.strip().split(',', 8) for line in lines[1:] if line.strip()]
+n_cols = len(lines[0].strip().split(','))
+max_splits = n_cols - 1
+header = lines[0].strip().split(',', max_splits)
+rows = [line.strip().split(',', max_splits) for line in lines[1:] if line.strip()]
 df = pd.DataFrame(rows, columns=header)
+# Backfill missing columns for older results.csv files
+for col in ['model', 'framework']:
+    if col not in df.columns:
+        df[col] = ''
 df['test_accuracy'] = df['test_accuracy'].astype(float)
 
 df = df[df['status'].isin(['keep', 'discard'])]

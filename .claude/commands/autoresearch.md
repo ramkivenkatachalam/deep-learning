@@ -2,13 +2,15 @@
 
 Run autonomous deep learning experiments: `$ARGUMENTS`
 
-Arguments: `<folder>` or `<folder> <model>`
+Arguments: `<folder>` or `<folder> <model>`, optionally with `--torch`
 - Single-model projects: `/autoresearch 1_heart-disease`
 - Multi-model projects: `/autoresearch 4_handbag_shoe cnn`
+- PyTorch variant: `/autoresearch 1_heart-disease --torch`
+- Multi-model + PyTorch: `/autoresearch 4_handbag_shoe cnn --torch`
 
 ## Setup
 
-1. Parse `$ARGUMENTS`: first word is the folder, second word (if present) is the model name.
+1. Parse `$ARGUMENTS`: first word is the folder, second word (if present and not a flag) is the model name. If `--torch` is present, all training commands should include `--torch`.
 2. `cd` into the folder.
 3. Read `CLAUDE.md` and `training.py` in that folder for full context.
 4. If a model name was given, also read the model file specified in `CLAUDE.md` (e.g. `model_cnn.py`).
@@ -46,9 +48,9 @@ LOOP FOREVER:
 2. Stage and commit:
    - Single-model: `git add training.py && git commit -m "description"`
    - Multi-model: `git add training.py model_*.py && git commit -m "description"`
-3. Run training:
-   - Single-model: `uv run python training.py > run.log 2>&1`
-   - Multi-model: `uv run python training.py <model> > run.log 2>&1`
+3. Run training (append `--torch` to command if the flag was given):
+   - Single-model: `uv run python training.py [--torch] > run.log 2>&1`
+   - Multi-model: `uv run python training.py <model> [--torch] > run.log 2>&1`
 4. `grep "^test_accuracy:\|^test_loss:\|^val_accuracy:" run.log`
 5. If grep is empty → crashed. `tail -n 50 run.log` to diagnose. Fix if trivial, skip if broken.
 6. Update status and description in `results.csv` for this run's row.

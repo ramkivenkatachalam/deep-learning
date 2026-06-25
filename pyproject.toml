@@ -10,4 +10,5 @@ dependencies = [
     "tensorflow>=2.16.2,<2.17",
     "tensorflow-metal>=1.2.0",
     "scipy>=1.11",
+    "torch>=2.2",
 ]
