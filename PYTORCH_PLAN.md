@@ -88,6 +88,21 @@ Add `--torch` flag support to each project folder, following the pattern establi
 4. **6_standalone_word_embeddings** — builds on text vectorization + adds embeddings
 5. **4_handbag_shoe** — most complex (multiple CNN variants + transfer learning)
 
+## Out of Scope
+
+These folders are lecture notebooks, homework assignments, or already use PyTorch — no `training.py` infrastructure to port.
+
+| Folder | Reason |
+|---|---|
+| `7_transformers/` | Lecture notebook only (custom Keras transformer for NER/slot-filling) |
+| `8_huggingface_pretrained/` | Lecture notebook, inference only — already uses PyTorch via HuggingFace |
+| `10_rag/` | Lecture notebook, no local training — uses OpenAI API for RAG |
+| `10.5_lora_finetuning/` | Tutorial notebook, uses Keras 3 (can already switch to PyTorch backend via env var) |
+| `11_diffusion/` | Lecture notebooks (3) — already uses PyTorch natively (diffusers + transformers) |
+| `hw1/` | Completed assignment notebooks (FER emotion classification with CNN + VGG19) |
+| `hw2/` | Completed assignment notebooks (20 Newsgroups with BoW, GloVe, BERT via TFHub) |
+| `notebooks/` | Placeholder (empty) |
+
 ## Common Patterns (from 1_heart-disease)
 
 - `model_torch.py` contains only architecture (`nn.Module` subclass + `build()` function)

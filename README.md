@@ -111,9 +111,11 @@ Each project can optionally support PyTorch alongside Keras via the `--torch` fl
 - `common.py` — Framework-agnostic code (data loading, metrics, CSV logging)
 - `training.py` — Entry point that dispatches to the appropriate framework
 
-Currently supported: `1_heart-disease/`. Other projects are Keras-only for now.
+Currently supported: `1_heart-disease/`. Other training projects (2-6) are Keras-only for now — see [PYTORCH_PLAN.md](PYTORCH_PLAN.md) for the rollout plan.
 
 ## Project structure
+
+### Training projects (with autoresearch support)
 
 ```
 ├── new_project.sh             # Scaffold a new project
@@ -121,46 +123,72 @@ Currently supported: `1_heart-disease/`. Other projects are Keras-only for now.
 ├── plot_results.py            # Results visualization (all experiments)
 ├── plot_results_by_model.py   # Per-model charts (multi-model projects)
 ├── pyproject.toml             # Shared dependencies
-├── 1_heart-disease/
-│   ├── CLAUDE.md              # Assignment context and ideas
+├── PYTORCH_PLAN.md            # Plan for adding PyTorch support to all projects
+├── 1_heart-disease/           # Binary classifier (Keras + PyTorch)
+│   ├── CLAUDE.md
 │   ├── common.py              # Shared: data loading, metrics, logging
 │   ├── model_keras.py         # Keras model builder
 │   ├── model_torch.py         # PyTorch model architecture
 │   ├── train_torch.py         # PyTorch training loop and evaluation
 │   ├── training.py            # Entry point (--torch flag selects framework)
 │   ├── course_notebook.ipynb  # Keras course notebook
-│   ├── course_notebook_torch.ipynb  # PyTorch course notebook
-│   ├── results.csv            # Experiment log (gitignored)
-│   └── experiments.png        # Results chart
-├── 2_fashion-mnist/
+│   └── course_notebook_torch.ipynb  # PyTorch course notebook
+├── 2_fashion-mnist/           # 10-class MLP (Keras only)
 │   ├── CLAUDE.md
 │   ├── training.py
-│   ├── results.csv
-│   └── experiments.png
-├── 3_fashion_mnist_cnn/
+│   └── course_notebook.ipynb
+├── 3_fashion_mnist_cnn/       # 10-class CNN (Keras only)
 │   ├── CLAUDE.md
+│   └── training.py
+├── 4_handbag_shoe/            # Binary CNN + ResNet50 transfer learning (Keras only)
+│   ├── CLAUDE.md
+│   ├── common.py
+│   ├── model_cnn.py
+│   ├── model_resnet50.py
 │   ├── training.py
-│   ├── results.csv
-│   └── experiments.png
-├── 4_handbag_shoe/
+│   ├── course.ipynb
+│   ├── course_notebook_cnn.ipynb
+│   └── course_notebook_transfer_learning.ipynb
+├── 5_music_genre_classification/  # BoW text classifier (Keras only)
 │   ├── CLAUDE.md
-│   ├── common.py              # Shared: data loading, metrics, logging
-│   ├── model_cnn.py           # CNN model builders
-│   ├── model_resnet50.py      # ResNet50 model builders
-│   ├── training.py            # Dispatcher: selects model via CLI arg
-│   ├── results.csv
-│   └── experiments.png
-├── 5_music_genre_classification/
-│   ├── CLAUDE.md
-│   ├── common.py              # Shared: data loading, metrics, logging
-│   ├── model_dense.py         # Dense model builders (unigram, bigram)
-│   ├── training.py            # Dispatcher: selects model via CLI arg
-│   └── results.csv
-└── 6_standalone_word_embeddings/
+│   ├── common.py
+│   ├── model_dense.py
+│   ├── training.py
+│   └── course_notebook.ipynb
+└── 6_standalone_word_embeddings/  # Embedding text classifier (Keras only)
     ├── CLAUDE.md
-    ├── common.py              # Shared: data loading, GloVe loading, metrics
-    ├── model_embedding.py     # Embedding model builders
-    ├── training.py            # Dispatcher: selects model via CLI arg
-    ├── embeddings.ipynb       # Original course notebook
-    └── results.csv
+    ├── common.py
+    ├── model_embedding.py
+    ├── training.py
+    ├── course_notebook.ipynb
+    └── embeddings.ipynb
+```
+
+### Course notebooks (no training.py)
+
+```
+├── 7_transformers/            # Custom transformer for NER/slot-filling (Keras)
+│   └── course_notebook.ipynb
+├── 8_huggingface_pretrained/  # Pre-trained model inference (HuggingFace/PyTorch)
+│   └── course_notebook.ipynb
+├── 10_rag/                    # Retrieval-Augmented Generation (OpenAI API)
+│   └── course_notebook.ipynb
+├── 10.5_lora_finetuning/      # LoRA fine-tuning Gemma 2B (Keras 3)
+│   └── course_notebook.ipynb
+└── 11_diffusion/              # Stable Diffusion + CV models (PyTorch)
+    ├── course_notebook_stable_diffusion.ipynb
+    ├── course_notebook_noisy_images.ipynb
+    └── course_notebook_cv_models.ipynb
+```
+
+### Homework assignments
+
+```
+├── hw1/                       # FER emotion classification (CNN + VGG19)
+│   ├── assignment.ipynb
+│   ├── solutions.ipynb
+│   └── fer_cnn.ipynb
+└── hw2/                       # 20 Newsgroups text classification (BoW + GloVe + BERT)
+    ├── assignment.ipynb
+    └── solutions.ipynb
 ```
