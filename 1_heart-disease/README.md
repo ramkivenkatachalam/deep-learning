@@ -4,14 +4,19 @@ Binary classification on the [UCI Heart Disease dataset](http://storage.googleap
 
 ## Results
 
-| | Accuracy | Architecture |
-|---|---|---|
-| **Baseline** | 90.16% | Dense(8, relu) → Dense(1, sigmoid) |
-| **Best** | **95.08%** | Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid) |
-
-**44 experiments** were run to reach the best result.
+| Framework | Accuracy | Architecture | Params |
+|---|---|---|---|
+| **Keras** | **93.44%** | Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid) | 497 |
+| **PyTorch** | **91.80%** | Dense(16, relu) → Dropout(0.3) → Dense(8, relu) → Dense(1, sigmoid) | 625 |
 
 ![Experiment results](experiments.png)
+
+## Usage
+
+```bash
+python training.py           # Keras (default)
+python training.py --torch   # PyTorch
+```
 
 ## Dataset
 
@@ -20,29 +25,31 @@ Binary classification on the [UCI Heart Disease dataset](http://storage.googleap
 - **Preprocessing**: Numerical features (age, trestbps, chol, thalach, oldpeak) standardized using training set statistics
 - **Target**: Binary (heart disease present or not)
 
-## Best model
+## Best models
 
-```
-Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid)
-```
-
+**Keras**: `Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid)`
 - **Optimizer**: Adam, learning rate 0.0005
 - **Loss**: Binary crossentropy
 - **Epochs**: 500, batch size 32, validation split 0.2
-- **Parameters**: 497
+
+**PyTorch**: `Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(8, relu) → Dense(1, sigmoid)`
+- **Optimizer**: AdamW, learning rate 0.0003, weight decay 0.05
+- **Loss**: BCELoss
+- **Epochs**: 500, batch size 32, validation split 0.2
 
 ## Key findings
 
-**What improved accuracy:**
-- Lowering learning rate from 0.001 to 0.0005 with more epochs (90.16% → 91.80%)
-- Adding Dropout(0.5) with 16 hidden units (91.80% → 93.44%)
-- Tuning dropout from 0.5 to 0.3 (93.44% → 95.08%)
+**Keras (10 experiments):**
+- Original baseline was already well-optimized at 93.44%
+- No change improved accuracy — wider layers, deeper networks, different optimizers, regularization, batch sizes all equal or worse
 
-**What didn't help:**
-- Deeper architectures (two hidden layers consistently worse)
-- Batch normalization (hurt performance)
-- Different activations (tanh, swish, SELU — no improvement)
-- L2 regularization, class weighting, different optimizers (SGD, AdamW)
-- Feature engineering (pairwise interactions, normalizing one-hot columns)
-- Learning rate scheduling (ReduceLROnPlateau)
-- More epochs beyond 500 (same accuracy, slower)
+**PyTorch (16 experiments):**
+- Baseline started at 86.89% with the same architecture as Keras
+- Adding a second hidden layer Dense(8) jumped to 91.80%
+- AdamW with weight decay and lower LR improved loss without changing accuracy
+- Remaining ~1.6% gap vs Keras likely due to different random init and val split mechanics
+
+**What didn't help (either framework):**
+- Batch normalization, L2 regularization, He weight init
+- LeakyReLU, wider/narrower layers, different batch sizes
+- More epochs beyond 500 (overfitting)
