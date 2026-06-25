@@ -1,10 +1,12 @@
 # Framework-agnostic utilities for heart disease classifier
 
+import sys
+import os
 import numpy as np
 import pandas as pd
-import subprocess
-import csv
-import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from shared import print_metrics, log_results_csv
 
 
 def load_data(random_state=41):
@@ -39,40 +41,3 @@ def load_data(random_state=41):
     return train_X, train_Y, test_X, test_Y
 
 
-def print_metrics(test_accuracy, test_loss, val_accuracy, val_loss,
-                  train_accuracy, train_loss, num_params, num_epochs,
-                  training_seconds):
-    """Print structured metrics block (parsed by experiment tooling)."""
-    print("---")
-    print(f"test_accuracy:    {test_accuracy:.4f}")
-    print(f"test_loss:        {test_loss:.4f}")
-    print(f"val_accuracy:     {val_accuracy:.4f}")
-    print(f"val_loss:         {val_loss:.4f}")
-    print(f"train_accuracy:   {train_accuracy:.4f}")
-    print(f"train_loss:       {train_loss:.4f}")
-    print(f"num_params:       {num_params}")
-    print(f"num_epochs:       {num_epochs}")
-    print(f"training_seconds: {training_seconds}")
-
-
-def log_results_csv(test_accuracy, test_loss, val_accuracy, val_loss,
-                    num_params, training_seconds, framework="keras", model="default"):
-    """Append a row to results.csv with status='pending'."""
-    try:
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL
-        ).decode().strip()
-    except Exception:
-        commit = "uncommitted"
-
-    results_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results.csv")
-    write_header = not os.path.exists(results_file)
-
-    with open(results_file, "a", newline="") as f:
-        writer = csv.writer(f)
-        if write_header:
-            writer.writerow(["commit", "test_accuracy", "test_loss", "val_accuracy", "val_loss",
-                             "num_params", "training_seconds", "status", "description", "model", "framework"])
-        writer.writerow([commit, f"{test_accuracy:.4f}", f"{test_loss:.4f}",
-                         f"{val_accuracy:.4f}", f"{val_loss:.4f}",
-                         num_params, training_seconds, "pending", "", model, framework])

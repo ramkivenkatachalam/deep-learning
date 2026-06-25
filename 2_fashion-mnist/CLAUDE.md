@@ -8,6 +8,19 @@ Based on MIT 15.773 Hands-On Deep Learning (Spring 2024).
 - Pixel values normalized to [0, 1]
 - Validation split: 0.2 of training data
 
+## Usage
+```
+python training.py           # Keras (default)
+python training.py --torch   # PyTorch
+```
+
+## File structure
+- `training.py` — main entry point, framework dispatch
+- `common.py` — data loading, labels, metrics output, CSV logging (framework-agnostic)
+- `model_keras.py` — Keras model builder
+- `model_torch.py` — PyTorch model architecture
+- `train_torch.py` — PyTorch training loop and evaluation
+
 ## Constraints
 - **NO CNN layers.** Do not use Conv2D, MaxPooling2D, or any convolutional layers. MLP/Dense-only architectures.
 
