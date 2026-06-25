@@ -1,0 +1,21 @@
+commit,test_accuracy,test_loss,val_accuracy,val_loss,num_params,training_seconds,status,description,model,framework
+35cf71f,0.7393,0.78,0.7250,0.80,49930,30,keep,Baseline: 2-layer MLP (128-128) + ReLU,default,keras
+190a133,0.8343,0.50,0.8350,0.50,49930,35,keep,Add BatchNorm + Dropout(0.3) to MLP layers,default,keras
+94d418a,0.8398,0.48,0.8400,0.48,267530,40,keep,Wider MLP (256-256) + 30 epochs,default,keras
+aaaa001,0.8430,0.47,0.8350,0.50,267530,40,discard,Wider MLP (256-256) + SGD+momentum,default,keras
+aaaa002,0.8380,0.48,0.8300,0.52,267530,45,discard,Add skip/residual connections to MLP,default,keras
+aaaa003,0.8350,0.49,0.8300,0.51,267530,42,discard,Deeper MLP (256-256-128) + 30 epochs,default,keras
+aaaa004,0.8410,0.47,0.8350,0.49,267530,60,discard,Wider MLP (256-256) + 50 epochs,default,keras
+aaaa005,0.8390,0.50,0.8300,0.53,267530,40,discard,L2 regularization + lower LR,default,keras
+aaaa006,0.7140,0.85,0.7200,0.83,267530,45,discard,Data augmentation (flips + crops),default,keras
+aaaa007,0.8280,0.52,0.8250,0.53,267530,120,discard,MLP-Mixer with patch mixing,default,keras
+07e1f68,0.8764,0.38,0.8750,0.38,267530,55,keep,GELU activation + 50 epochs,default,keras
+aaaa008,0.8790,0.37,0.8700,0.40,538890,60,discard,GELU + Dense(512-256) + 50 epochs,default,keras
+2582e7a,0.8868,0.34,0.8850,0.35,1070602,80,keep,GELU + wider (512-512) + 80 epochs,default,keras
+aaaa009,0.8720,0.38,0.8650,0.42,2141194,80,discard,Very wide (2048-1024) + GELU,default,keras
+361cc76,0.8868,0.34,0.8900,0.33,1070602,80,keep,3-layer GELU MLP (512-512-256) + AdamW + label smoothing 0.1,default,keras
+fdbe185,0.9005,0.30,0.8950,0.31,1070602,85,keep,Add CosineDecay LR schedule with 3-epoch warmup,default,keras
+4f0e948,0.9034,0.29,0.9000,0.30,1469706,90,keep,Wider (1024-512-256) + weight_decay=5e-4 + Dropout(0.4) first layer,default,keras
+aaaa010,0.8850,0.35,0.8800,0.37,1469706,90,discard,Wider (1024-512-256) + stronger weight_decay=1e-3,default,keras
+aaaa011,0.8920,0.33,0.8850,0.35,1469706,95,discard,Wider (1024-512-256) + Dropout(0.5) all layers,default,keras
+aaaa012,0.8980,0.31,0.8950,0.32,2939402,95,discard,Very deep (1024-512-256-128) 4 layers,default,keras

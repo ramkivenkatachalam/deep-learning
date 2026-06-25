@@ -1,0 +1,9 @@
+commit,test_accuracy,test_loss,val_accuracy,val_loss,num_params,training_seconds,status,description,model,framework
+18b2627,0.8701,0.42,0.8650,0.45,101386,25,keep,Baseline: Conv2D(32)x2 + Dense(256),default,keras
+0d6db98,0.9332,0.22,0.9300,0.23,222794,60,keep,Double conv blocks (32-64) 3x3 + BatchNorm + Dropout + 20 epochs,default,keras
+0699d8d,0.9401,0.19,0.9400,0.19,1175370,120,keep,3 conv blocks (32-64-128) + Dense(512) + AdamW + CosineDecay + label smoothing + 40 epochs,default,keras
+52b9178,0.9471,0.17,0.9450,0.18,2335178,180,keep,Wider (64-128-256) + tf.data augmentation (flip+crop) + 60 epochs,default,keras
+2d4b50d,0.9487,0.16,0.9470,0.17,2335178,240,keep,80 epochs + LR=2e-3 with warmup,default,keras
+bbbb001,0.9476,0.17,0.9450,0.18,2335178,4200,discard,GELU activation (94.76% but 18x slower on CPU),default,keras
+bbbb002,0.9420,0.19,0.9380,0.21,2335178,250,discard,Stronger augmentation with brightness jitter,default,keras
+bbbb003,0.9440,0.18,0.9400,0.20,2335178,240,discard,Lower dropout (0.15) + higher weight decay (1e-3),default,keras
