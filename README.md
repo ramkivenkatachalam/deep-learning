@@ -6,7 +6,8 @@ Projects for MIT Deep Learning certification. Each project starts with a baselin
 
 | Assignment | Dataset | Task | Baseline | Best | Experiments |
 |---|---|---|---|---|---|
-| [1_heart-disease](1_heart-disease/) | UCI Heart Disease (303 samples, 13 features) | Binary classification | 90.16% | **95.08%** | 44 |
+| [1_heart-disease](1_heart-disease/) | UCI Heart Disease (303 samples, 13 features) | Binary classification (Keras) | 90.16% | **93.44%** | 10 |
+| | | Binary classification (PyTorch) | 86.89% | **91.80%** | 16 |
 | [2_fashion-mnist](2_fashion-mnist/) | Fashion-MNIST (70k images, 28x28) | 10-class MLP | 73.93% | **90.34%** | 20 |
 | [3_fashion_mnist_cnn](3_fashion_mnist_cnn/) | Fashion-MNIST (70k images, 28x28) | 10-class CNN | 87.01% | **94.87%** | 8 |
 | [4_handbag_shoe](4_handbag_shoe/) | Handbags vs Shoes (224x224 RGB) | Binary CNN | 76.92% | **82.05%** | 6 |
@@ -37,7 +38,8 @@ This creates a numbered folder (e.g. `3_project-name/`) with template `CLAUDE.md
 
 ```bash
 cd 1_heart-disease
-uv run python training.py
+uv run python training.py           # Keras (default)
+uv run python training.py --torch   # PyTorch
 ```
 
 For multi-model projects, pass the model name:
@@ -45,13 +47,16 @@ For multi-model projects, pass the model name:
 ```bash
 cd 4_handbag_shoe
 uv run python training.py cnn
+uv run python training.py cnn --torch   # PyTorch variant
 ```
 
 Or use the helper script to commit and run in one step:
 
 ```bash
 ../run_experiment.sh "description of change"
-../run_experiment.sh "widen conv layers" cnn    # multi-model
+../run_experiment.sh "widen conv layers" cnn         # multi-model
+../run_experiment.sh "try AdamW" --torch              # PyTorch
+../run_experiment.sh "try AdamW" cnn --torch          # multi-model + PyTorch
 ```
 
 ## Autoresearch
@@ -73,6 +78,8 @@ Using the Claude Code slash command:
 ```
 /autoresearch 1_heart-disease              # single-model project
 /autoresearch 4_handbag_shoe cnn           # multi-model project
+/autoresearch 1_heart-disease --torch      # PyTorch variant
+/autoresearch 4_handbag_shoe cnn --torch   # multi-model + PyTorch
 ```
 
 For multi-model projects, autoresearch tunes one model at a time — modifying both `training.py` (hyperparameters) and the model's builder file (architecture). Each folder's `CLAUDE.md` maps model names to their files.
@@ -94,6 +101,18 @@ For multi-model projects, generate per-model charts:
 uv run python plot_results_by_model.py 6_standalone_word_embeddings
 ```
 
+## PyTorch support
+
+Each project can optionally support PyTorch alongside Keras via the `--torch` flag. The pattern:
+
+- `model_keras.py` — Keras model builder (architecture only)
+- `model_torch.py` — PyTorch model architecture (`nn.Module` subclass)
+- `train_torch.py` — PyTorch training loop and evaluation utilities
+- `common.py` — Framework-agnostic code (data loading, metrics, CSV logging)
+- `training.py` — Entry point that dispatches to the appropriate framework
+
+Currently supported: `1_heart-disease/`. Other projects are Keras-only for now.
+
 ## Project structure
 
 ```
@@ -104,7 +123,13 @@ uv run python plot_results_by_model.py 6_standalone_word_embeddings
 ├── pyproject.toml             # Shared dependencies
 ├── 1_heart-disease/
 │   ├── CLAUDE.md              # Assignment context and ideas
-│   ├── training.py            # Training script
+│   ├── common.py              # Shared: data loading, metrics, logging
+│   ├── model_keras.py         # Keras model builder
+│   ├── model_torch.py         # PyTorch model architecture
+│   ├── train_torch.py         # PyTorch training loop and evaluation
+│   ├── training.py            # Entry point (--torch flag selects framework)
+│   ├── course_notebook.ipynb  # Keras course notebook
+│   ├── course_notebook_torch.ipynb  # PyTorch course notebook
 │   ├── results.csv            # Experiment log (gitignored)
 │   └── experiments.png        # Results chart
 ├── 2_fashion-mnist/
