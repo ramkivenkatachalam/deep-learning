@@ -47,7 +47,8 @@ python training.py --torch   # PyTorch
 - Baseline started at 86.89% with the same architecture as Keras
 - Adding a second hidden layer Dense(8) jumped to 91.80%
 - AdamW with weight decay and lower LR improved loss without changing accuracy
-- Remaining ~1.6% gap vs Keras likely due to different random init and val split mechanics
+**Why PyTorch trails Keras by ~1.6%:**
+The same single-layer architecture gets 93.44% in Keras but only 86.89% in PyTorch. Testing with matched validation splits (Keras takes the last 20%, PyTorch uses a random permutation) closed the gap partially (86.89% → 88.52%), but ~5 points remain due to different default weight initialization between the frameworks. With only 303 samples, these small differences get amplified. PyTorch needed a deeper architecture to compensate.
 
 **What didn't help (either framework):**
 - Batch normalization, L2 regularization, He weight init
