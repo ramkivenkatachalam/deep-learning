@@ -17,7 +17,8 @@ python training.py --torch   # PyTorch
 - `training.py` — main entry point, framework dispatch
 - `common.py` — data loading, metrics output, CSV logging (framework-agnostic)
 - `model_keras.py` — Keras model builder
-- `model_torch.py` — PyTorch model, training loop, evaluation
+- `model_torch.py` — PyTorch model architecture
+- `train_torch.py` — PyTorch training loop and evaluation
 
 ## Current best
 - **Keras:** Input(21) → Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid), Adam LR=0.0005 — test_accuracy: 0.9344

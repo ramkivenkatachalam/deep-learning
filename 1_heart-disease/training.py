@@ -28,7 +28,8 @@ learning_rate = 0.0003 if use_torch else 0.0005
 if use_torch:
     import torch
     torch.manual_seed(41)
-    from model_torch import build, train_model, evaluate_model
+    from model_torch import build
+    from train_torch import train_model, evaluate_model
 
     model = build(input_dim)
     print(model)
