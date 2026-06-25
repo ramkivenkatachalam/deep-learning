@@ -63,4 +63,3 @@ LOOP FOREVER:
 - **Timeout:** each run should be under 2 minutes. Kill and discard if over 5 minutes.
 - **Crashes:** fix trivial bugs and re-run. Skip fundamentally broken ideas.
 - **Redirect output:** always `> run.log 2>&1`. Never let training output flood context.
-- **Do not commit results.csv** — it's gitignored.

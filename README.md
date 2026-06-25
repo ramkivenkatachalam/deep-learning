@@ -1,6 +1,14 @@
 # Deep Learning
 
-Projects for the [MIT Hands On Deep Learning course](https://ocw.mit.edu/courses/15-773-hands-on-deep-learning-spring-2024/). Each project starts with a baseline model based on the notebook covered in the class, then uses an autonomous experiment harness ([autoresearch](#autoresearch)) to iteratively tune architecture, hyperparameters, and regularization. The other extension is that we also have PyTorch implementations for each of the projects in addition to Keras.
+Projects from the [MIT Hands On Deep Learning course](https://ocw.mit.edu/courses/15-773-hands-on-deep-learning-spring-2024/). 
+
+## About what is in each project
++ Each project starts with a notebook recreated based on what was demoed in  class (`course_notebook.ipynb`)
++ Extract the model code to model*_keras.py file to enable ease of experimentation
++ Use autonomous experiment harness (based on [autoresearch](#autoresearch)) to iteratively tune architecture, hyperparameters, and regularization. 
++ **Bonus:** pytorch version of the notebook (`course_notebook_torch.ipynb`)
++ **Bonus:** pytorch version of model and training code 
++ `README.md` describes the problem, baseline and experimentation results.
 
 ## Results
 
@@ -164,7 +172,7 @@ Currently supported: `1_heart-disease/`. Other training projects (2-6) are Keras
     └── embeddings.ipynb
 ```
 
-### Course notebooks (no training.py)
+### Course notebooks (no training.py) - WIP
 
 ```
 ├── 7_transformers/            # Custom transformer for NER/slot-filling (Keras)
