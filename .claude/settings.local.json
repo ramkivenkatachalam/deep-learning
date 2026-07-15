@@ -5,7 +5,8 @@
       "Bash(source:*)",
       "Bash(uv run:*)",
       "Bash(./run_experiment.sh:*)",
-      "Bash(../run_experiment.sh:*)"
+      "Bash(../run_experiment.sh:*)",
+      "Bash(ls:*)"
     ]
   }
 }

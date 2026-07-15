@@ -2,16 +2,17 @@
 # Data download/split, dataset loading, plotting, metrics/logging
 
 import os
+import sys
 import shutil
 import pathlib
 import urllib.request
 import zipfile
-import csv
-import subprocess
 
-import keras
 import numpy as np
 import matplotlib.pyplot as plt
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from shared import print_metrics, log_results_csv
 
 
 DATA_URL = "https://www.dropbox.com/s/w07liww46kgxo1m/handbags-shoes.zip?dl=1"
@@ -65,7 +66,8 @@ def prepare_data(data_dir="./data"):
 
 
 def load_datasets(base_dir, batch_size=BATCH_SIZE):
-    """Load train/val/test datasets with integer labels (no one-hot)."""
+    """Load train/val/test Keras datasets with integer labels (no one-hot)."""
+    import keras
     base_dir = pathlib.Path(base_dir)
 
     train_dataset = keras.utils.image_dataset_from_directory(
@@ -84,6 +86,84 @@ def load_datasets(base_dir, batch_size=BATCH_SIZE):
         batch_size=batch_size,
     )
     return train_dataset, validation_dataset, test_dataset
+
+
+def load_datasets_torch(base_dir, batch_size=BATCH_SIZE, augment=False):
+    """Load train/val/test PyTorch DataLoaders. Images scaled to [0,1]."""
+    from torchvision import datasets, transforms
+    from torch.utils.data import DataLoader
+
+    base_dir = pathlib.Path(base_dir)
+
+    if augment:
+        train_transform = transforms.Compose([
+            transforms.Resize(IMAGE_SIZE),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(18),
+            transforms.RandomAffine(0, scale=(0.9, 1.1)),
+            transforms.ToTensor(),  # [0,255] → [0,1]
+        ])
+    else:
+        train_transform = transforms.Compose([
+            transforms.Resize(IMAGE_SIZE),
+            transforms.ToTensor(),
+        ])
+
+    eval_transform = transforms.Compose([
+        transforms.Resize(IMAGE_SIZE),
+        transforms.ToTensor(),
+    ])
+
+    train_dataset = datasets.ImageFolder(str(base_dir / "train"), transform=train_transform)
+    val_dataset = datasets.ImageFolder(str(base_dir / "validation"), transform=eval_transform)
+    test_dataset = datasets.ImageFolder(str(base_dir / "test"), transform=eval_transform)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader, test_loader
+
+
+def load_datasets_torch_resnet(base_dir, batch_size=BATCH_SIZE, augment=False):
+    """Load PyTorch DataLoaders with ResNet50 normalization."""
+    from torchvision import datasets, transforms
+    from torch.utils.data import DataLoader
+
+    base_dir = pathlib.Path(base_dir)
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+    if augment:
+        train_transform = transforms.Compose([
+            transforms.Resize(IMAGE_SIZE),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(18),
+            transforms.RandomAffine(0, scale=(0.9, 1.1)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    else:
+        train_transform = transforms.Compose([
+            transforms.Resize(IMAGE_SIZE),
+            transforms.ToTensor(),
+            normalize,
+        ])
+
+    eval_transform = transforms.Compose([
+        transforms.Resize(IMAGE_SIZE),
+        transforms.ToTensor(),
+        normalize,
+    ])
+
+    train_dataset = datasets.ImageFolder(str(base_dir / "train"), transform=train_transform)
+    val_dataset = datasets.ImageFolder(str(base_dir / "validation"), transform=eval_transform)
+    test_dataset = datasets.ImageFolder(str(base_dir / "test"), transform=eval_transform)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader, test_loader
 
 
 def plot_loss_curves(history):
@@ -116,35 +196,3 @@ def plot_acc_curves(history):
     plt.show()
 
 
-def print_metrics(history, test_loss, test_accuracy, num_params, training_seconds):
-    """Print structured metrics matching repo conventions."""
-    h = history.history
-    print("---")
-    print(f"test_accuracy:    {test_accuracy:.4f}")
-    print(f"test_loss:        {test_loss:.4f}")
-    print(f"val_accuracy:     {h['val_accuracy'][-1]:.4f}")
-    print(f"val_loss:         {h['val_loss'][-1]:.4f}")
-    print(f"train_accuracy:   {h['accuracy'][-1]:.4f}")
-    print(f"train_loss:       {h['loss'][-1]:.4f}")
-    print(f"num_params:       {num_params}")
-    print(f"num_epochs:       {len(h['loss'])}")
-    print(f"training_seconds: {training_seconds}")
-
-
-def log_results_csv(test_accuracy, test_loss, val_accuracy, val_loss, num_params, training_seconds, description=""):
-    """Append results to results.csv in the script directory."""
-    try:
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL
-        ).decode().strip()
-    except Exception:
-        commit = "uncommitted"
-
-    results_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results.csv")
-    write_header = not os.path.exists(results_file)
-
-    with open(results_file, "a", newline="") as f:
-        writer = csv.writer(f)
-        if write_header:
-            writer.writerow(["commit", "test_accuracy", "test_loss", "val_accuracy", "val_loss", "num_params", "training_seconds", "status", "description"])
-        writer.writerow([commit, f"{test_accuracy:.4f}", f"{test_loss:.4f}", f"{val_accuracy:.4f}", f"{val_loss:.4f}", num_params, training_seconds, "pending", description])

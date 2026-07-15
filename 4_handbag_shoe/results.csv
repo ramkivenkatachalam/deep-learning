@@ -1,0 +1,6 @@
+commit,test_accuracy,test_loss,val_accuracy,val_loss,num_params,training_seconds,status,description,model,framework
+9a37537,0.8205,0.8113,0.7143,1.1604,11954337,16.6,pending,,cnn,keras
+9a37537,0.8205,0.8113,0.7143,1.1604,11954337,10.3,pending,,cnn,keras
+9a37537,0.7949,0.6726,0.7755,1.2211,11954337,31.6,pending,,cnn,torch
+9a37537,1.0000,0.0000,0.9796,0.6891,25690625,23.8,pending,,resnet50,torch
+9a37537,1.0000,0.0000,1.0000,0.0000,25690625,9.2,pending,,resnet50,keras

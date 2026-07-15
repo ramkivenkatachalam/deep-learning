@@ -1,12 +1,14 @@
 # Shared utilities for word embedding genre classifier
-# Data download, label prep, GloVe loading, metrics printing, CSV logging
+# Data download, label prep, GloVe loading, text vectorization
 
 import os
-import csv
-import subprocess
+import sys
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from shared import print_metrics, log_results_csv
 
 
 TRAIN_URL = "https://www.dropbox.com/scl/fi/ito6bnl2yaf1uw0uqibzf/lyric_genre_train.csv?rlkey=04dkn5un2djza8x0bdmfnlw3u&st=y47qh8i4&dl=1"
@@ -75,35 +77,20 @@ def build_embedding_matrix(vocabulary, embeddings_index, max_tokens, embedding_d
     return embedding_matrix
 
 
-def print_metrics(history, test_loss, test_accuracy, num_params, training_seconds):
-    """Print structured metrics matching repo conventions."""
-    h = history.history
-    print("---")
-    print(f"test_accuracy:    {test_accuracy:.4f}")
-    print(f"test_loss:        {test_loss:.4f}")
-    print(f"val_accuracy:     {h['val_accuracy'][-1]:.4f}")
-    print(f"val_loss:         {h['val_loss'][-1]:.4f}")
-    print(f"train_accuracy:   {h['accuracy'][-1]:.4f}")
-    print(f"train_loss:       {h['loss'][-1]:.4f}")
-    print(f"num_params:       {num_params}")
-    print(f"num_epochs:       {len(h['loss'])}")
-    print(f"training_seconds: {training_seconds}")
+def vectorize_text_int(train_lyrics, val_lyrics, test_lyrics, max_tokens=5000, max_length=300):
+    """Int-sequence vectorization. Returns (x_train, x_val, x_test, vocabulary) as numpy arrays."""
+    import keras
 
+    text_vectorization = keras.layers.TextVectorization(
+        max_tokens=max_tokens,
+        output_mode="int",
+        output_sequence_length=max_length,
+    )
+    text_vectorization.adapt(train_lyrics)
 
-def log_results_csv(test_accuracy, test_loss, val_accuracy, val_loss, num_params, training_seconds, description=""):
-    """Append results to results.csv in the script directory."""
-    try:
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL
-        ).decode().strip()
-    except Exception:
-        commit = "uncommitted"
+    x_train = text_vectorization(train_lyrics).numpy()
+    x_val = text_vectorization(val_lyrics).numpy()
+    x_test = text_vectorization(test_lyrics).numpy()
+    vocabulary = text_vectorization.get_vocabulary()
 
-    results_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results.csv")
-    write_header = not os.path.exists(results_file)
-
-    with open(results_file, "a", newline="") as f:
-        writer = csv.writer(f)
-        if write_header:
-            writer.writerow(["commit", "test_accuracy", "test_loss", "val_accuracy", "val_loss", "num_params", "training_seconds", "status", "description"])
-        writer.writerow([commit, f"{test_accuracy:.4f}", f"{test_loss:.4f}", f"{val_accuracy:.4f}", f"{val_loss:.4f}", num_params, training_seconds, "pending", description])
+    return x_train, x_val, x_test, vocabulary

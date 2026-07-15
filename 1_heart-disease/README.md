@@ -2,22 +2,6 @@
 
 Binary classification on the [UCI Heart Disease dataset](http://storage.googleapis.com/download.tensorflow.org/data/heart.csv) (303 samples, 13 features). Part of MIT 15.773 Hands-On Deep Learning (Spring 2024).
 
-## Results
-
-| Framework | Accuracy | Architecture | Params |
-|---|---|---|---|
-| **Keras** | **93.44%** | Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid) | 497 |
-| **PyTorch** | **91.80%** | Dense(16, relu) → Dropout(0.3) → Dense(8, relu) → Dense(1, sigmoid) | 625 |
-
-![Experiment results](experiments.png)
-
-## Usage
-
-```bash
-python training.py           # Keras (default)
-python training.py --torch   # PyTorch
-```
-
 ## Dataset
 
 - **Samples**: 303 (242 train / 61 test, 80/20 split, seed=41)
@@ -36,6 +20,23 @@ python training.py --torch   # PyTorch
 - **Optimizer**: AdamW, learning rate 0.0003, weight decay 0.05
 - **Loss**: BCELoss
 - **Epochs**: 500, batch size 32, validation split 0.2
+
+## Results
+
+| Framework | Accuracy | Architecture | Params |
+|---|---|---|---|
+| **Keras** | **93.44%** | Dense(16, relu) → Dropout(0.3) → Dense(1, sigmoid) | 497 |
+| **PyTorch** | **91.80%** | Dense(16, relu) → Dropout(0.3) → Dense(8, relu) → Dense(1, sigmoid) | 625 |
+
+![Experiment results](experiments.png)
+
+## Usage
+
+```bash
+python training.py           # Keras (default)
+python training.py --torch   # PyTorch
+```
+
 
 ## Key findings
 

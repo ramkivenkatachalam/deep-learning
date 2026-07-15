@@ -3,140 +3,102 @@
 # Original colab: https://colab.research.google.com/drive/1Ll2iV7bXLqGqbrLQDHzsRqetWNks_M6q
 #
 # Dataset: Fashion-MNIST (60k train / 10k test, 28x28 grayscale, 10 classes)
-# This is the only file modified during autoresearch experiments.
+# Usage:
+#   python training.py           # Keras (default)
+#   python training.py --torch   # PyTorch
 
-import tensorflow as tf
-from tensorflow import keras
-import numpy as np
+import sys
 import time
-import subprocess
-import csv
-import os
+from common import load_data, print_metrics, log_results_csv
 
-keras.utils.set_random_seed(41)
+# --- Parse flags ---
+use_torch = "--torch" in sys.argv
 
-# --- Data loading and preprocessing ---
+# --- Data loading (framework-agnostic) ---
+x_train, y_train, x_test, y_test = load_data()
 
-(x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
-
-x_train = x_train / 255.0
-x_test = x_test / 255.0
-
-# Add channel dimension for Conv2D
-x_train = x_train[..., np.newaxis]
-x_test = x_test[..., np.newaxis]
-
-# --- Model architecture ---
-
-input = keras.Input(shape=(28, 28, 1))
-h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(input)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(64, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(128, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Conv2D(256, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Conv2D(256, (3, 3), activation="relu", padding="same")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.MaxPooling2D((2, 2))(h)
-h = keras.layers.Dropout(0.25)(h)
-
-h = keras.layers.Flatten()(h)
-h = keras.layers.Dense(512, activation="relu")(h)
-h = keras.layers.BatchNormalization()(h)
-h = keras.layers.Dropout(0.5)(h)
-output = keras.layers.Dense(10, activation="softmax")(h)
-model = keras.Model(input, output)
-
-model.summary()
-
-num_params = model.count_params()
-
-# --- Training ---
-
+# --- Hyperparameters ---
 num_epochs = 80
 batch_size = 128
+learning_rate = 2e-3
+weight_decay = 5e-4
 
-# Manual val split for label smoothing
-val_split = 0.2
-num_val = int(len(x_train) * val_split)
-x_val, y_val = x_train[:num_val], y_train[:num_val]
-x_tr, y_tr = x_train[num_val:], y_train[num_val:]
+# --- Framework dispatch ---
+if use_torch:
+    import torch
+    torch.manual_seed(41)
+    from model_torch import build
+    from train_torch import train_model, evaluate_model
 
-y_tr_oh = keras.utils.to_categorical(y_tr, 10)
-y_val_oh = keras.utils.to_categorical(y_val, 10)
-y_test_oh = keras.utils.to_categorical(y_test, 10)
+    model = build()
+    print(model)
+    num_params = sum(p.numel() for p in model.parameters())
 
-steps_per_epoch = len(x_tr) // batch_size
-lr_schedule = keras.optimizers.schedules.CosineDecay(
-    initial_learning_rate=2e-3, decay_steps=num_epochs * steps_per_epoch,
-    warmup_target=2e-3, warmup_steps=3 * steps_per_epoch
-)
-optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=5e-4)
-loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
-model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
+    t0 = time.time()
+    history = train_model(model, x_train, y_train,
+                          num_epochs=num_epochs, batch_size=batch_size,
+                          learning_rate=learning_rate, weight_decay=weight_decay,
+                          validation_split=0.2, warmup_epochs=3, augment=True)
+    training_seconds = round(time.time() - t0, 1)
 
-# Data augmentation via tf.data (train only)
-def augment(image, label):
-    image = tf.image.random_flip_left_right(image)
-    image = tf.pad(image, [[2, 2], [2, 2], [0, 0]], mode='REFLECT')
-    image = tf.image.random_crop(image, size=[28, 28, 1])
-    return image, label
+    test_loss, test_accuracy = evaluate_model(model, x_test, y_test)
+else:
+    import tensorflow as tf
+    from tensorflow import keras
+    keras.utils.set_random_seed(41)
+    from model_keras import build
 
-train_ds = tf.data.Dataset.from_tensor_slices((x_tr, y_tr_oh))
-train_ds = train_ds.shuffle(len(x_tr)).map(augment, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(tf.data.AUTOTUNE)
-val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val_oh)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+    model = build()
+    model.summary()
+    num_params = model.count_params()
 
-t0 = time.time()
-history = model.fit(train_ds, epochs=num_epochs, validation_data=val_ds, verbose=True)
-training_seconds = round(time.time() - t0, 1)
+    # Manual val split for label smoothing
+    val_split = 0.2
+    num_val = int(len(x_train) * val_split)
+    x_val, y_val = x_train[:num_val], y_train[:num_val]
+    x_tr, y_tr = x_train[num_val:], y_train[num_val:]
 
-history_dict = history.history
+    y_tr_oh = keras.utils.to_categorical(y_tr, 10)
+    y_val_oh = keras.utils.to_categorical(y_val, 10)
+    y_test_oh = keras.utils.to_categorical(y_test, 10)
 
-# --- Evaluation and structured output ---
-# Stats block is parsed by experiment tooling (grep "^test_accuracy:" run.log)
+    steps_per_epoch = len(x_tr) // batch_size
+    lr_schedule = keras.optimizers.schedules.CosineDecay(
+        initial_learning_rate=learning_rate, decay_steps=num_epochs * steps_per_epoch,
+        warmup_target=learning_rate, warmup_steps=3 * steps_per_epoch
+    )
+    optimizer = keras.optimizers.AdamW(learning_rate=lr_schedule, weight_decay=weight_decay)
+    loss = keras.losses.CategoricalCrossentropy(label_smoothing=0.1)
+    model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
 
-test_loss, test_accuracy = model.evaluate(x_test, y_test_oh)
+    # Data augmentation via tf.data (train only)
+    def augment(image, label):
+        image = tf.image.random_flip_left_right(image)
+        image = tf.pad(image, [[2, 2], [2, 2], [0, 0]], mode='REFLECT')
+        image = tf.image.random_crop(image, size=[28, 28, 1])
+        return image, label
 
-train_loss = history_dict["loss"][-1]
-train_accuracy = history_dict["accuracy"][-1]
-val_loss = history_dict["val_loss"][-1]
-val_accuracy = history_dict["val_accuracy"][-1]
+    train_ds = tf.data.Dataset.from_tensor_slices((x_tr, y_tr_oh))
+    train_ds = train_ds.shuffle(len(x_tr)).map(augment, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+    val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val_oh)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
-print("---")
-print(f"test_accuracy:    {test_accuracy:.4f}")
-print(f"test_loss:        {test_loss:.4f}")
-print(f"val_accuracy:     {val_accuracy:.4f}")
-print(f"val_loss:         {val_loss:.4f}")
-print(f"train_accuracy:   {train_accuracy:.4f}")
-print(f"train_loss:       {train_loss:.4f}")
-print(f"num_params:       {num_params}")
-print(f"num_epochs:       {num_epochs}")
-print(f"training_seconds: {training_seconds}")
+    t0 = time.time()
+    history_obj = model.fit(train_ds, epochs=num_epochs, validation_data=val_ds, verbose=True)
+    training_seconds = round(time.time() - t0, 1)
 
-# --- Auto-log results to CSV ---
+    history = history_obj.history
+    test_loss, test_accuracy = model.evaluate(x_test, y_test_oh)
 
-try:
-    commit = subprocess.check_output(
-        ["git", "rev-parse", "--short", "HEAD"], stderr=subprocess.DEVNULL
-    ).decode().strip()
-except Exception:
-    commit = "uncommitted"
+# --- Results (shared) ---
+train_loss = history["loss"][-1]
+train_accuracy = history["accuracy"][-1]
+val_loss = history["val_loss"][-1]
+val_accuracy = history["val_accuracy"][-1]
 
-results_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results.csv")
-write_header = not os.path.exists(results_file)
+print_metrics(test_accuracy, test_loss, val_accuracy, val_loss,
+              train_accuracy, train_loss, num_params, num_epochs,
+              training_seconds)
 
-with open(results_file, "a", newline="") as f:
-    writer = csv.writer(f)
-    if write_header:
-        writer.writerow(["commit", "test_accuracy", "test_loss", "val_accuracy", "val_loss", "num_params", "training_seconds", "status", "description"])
-    writer.writerow([commit, f"{test_accuracy:.4f}", f"{test_loss:.4f}", f"{val_accuracy:.4f}", f"{val_loss:.4f}", num_params, training_seconds, "pending", ""])
+log_results_csv(test_accuracy, test_loss, val_accuracy, val_loss,
+                num_params, training_seconds,
+                framework="torch" if use_torch else "keras")
