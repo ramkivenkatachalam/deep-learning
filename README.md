@@ -179,6 +179,8 @@ Currently supported: `1_heart-disease/`. Other training projects (2-6) are Keras
 │   └── course_notebook.ipynb
 ├── 8_huggingface_pretrained/  # Pre-trained model inference (HuggingFace/PyTorch)
 │   └── course_notebook.ipynb
+├── 9_nano_gpt/                # Build a character-level GPT from scratch (PyTorch)
+│   └── course_notebook_torch.ipynb
 ├── 10_rag/                    # Retrieval-Augmented Generation (OpenAI API)
 │   └── course_notebook.ipynb
 ├── 10.5_lora_finetuning/      # LoRA fine-tuning Gemma 2B (Keras 3)
